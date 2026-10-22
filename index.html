@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>세일즈 AI 코치</title>
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ===================== AUTH SCREEN ===================== -->
+<div class="auth-wrap" id="authScreen">
+  <div class="auth-split">
+    <div class="auth-left">
+      <div class="auth-left-inner">
+        <div style="display:flex; align-items:center; gap:9px; margin-bottom:28px;">
+          <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+          <span style="font-weight:700; font-size:16px;">세일즈 AI 코치</span>
+        </div>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth="login">로그인</button>
+          <button class="auth-tab" data-auth="signup">회사 신규 가입</button>
+        </div>
+
+        <div class="auth-panel active" id="auth-login">
+          <div class="field"><label>이메일</label><input type="text" value="keunhye@sdscorp.co.kr" /></div>
+          <div class="field"><label>비밀번호</label><input type="password" value="••••••••••" /></div>
+          <button class="btn btn-primary auth-submit">로그인</button>
+          <div class="auth-foot">비밀번호를 잊으셨나요? <b style="color:var(--text);">재설정하기</b></div>
+        </div>
+
+        <div class="auth-panel" id="auth-signup">
+          <div class="field"><label>회사명</label><input type="text" placeholder="예: 삼성SDS" /></div>
+          <div class="field"><label>관리자 이메일</label><input type="text" placeholder="admin@company.com" /></div>
+          <div class="field"><label>비밀번호</label><input type="password" placeholder="8자 이상" /></div>
+          <button class="btn btn-primary auth-submit">회사 워크스페이스 생성</button>
+          <div class="auth-foot">가입하면 이메일로 인증 링크가 발송됩니다</div>
+        </div>
+
+        <div class="auth-divider">데모로 바로 둘러보기</div>
+        <div class="demo-row">
+          <button class="btn demo-btn" onclick="enterApp('sales')">영업 직원으로 체험</button>
+          <button class="btn demo-btn" onclick="enterApp('admin')">관리자로 체험</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-right">
+      <div class="auth-blob b1"></div>
+      <div class="auth-blob b2"></div>
+      <div class="auth-blob b3"></div>
+
+      <div class="auth-right-logo">
+        <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <span>세일즈 AI 코치</span>
+      </div>
+
+      <div class="auth-right-body">
+        <h2>영업 업무, AI와 함께<br/>평가받고 성장하세요</h2>
+        <p>RFP 분석부터 견적서 작성까지 — AI와 대화하며 산출물을 만들고, 자동 평가와 코칭으로 다음 업무를 더 잘 해내세요.</p>
+      </div>
+
+      <div class="auth-proof">
+        <div class="stack"><span>강</span><span>권</span><span>+32</span></div>
+        <div><b>34명이 함께 쓰고 있어요</b><small>영업1팀 · 삼성SDS</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div class="app-shell" id="appShell" style="display:none;">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+      <span class="brand-name">세일즈 AI 코치</span>
+    </div>
+
+    <div class="workspace-switch">
+      <div class="wmark"></div>
+      <div class="wtext"><b>영업1팀</b><span>34명 · 삼성SDS</span></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 9l4 4 4-4M8 15l4-4 4 4"/></svg>
+    </div>
+
+    <div id="mainNav">
+      <div class="nav-label">워크스페이스</div>
+      <button class="nav-item active" data-page="page-tasklist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        업무 현황
+      </button>
+      <button class="nav-item" data-page="page-workspace-list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.8 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.1-5.1A8.4 8.4 0 1 1 21 11.5z"/></svg>
+        AI 업무 공간
+      </button>
+      <div class="nav-label">평가</div>
+      <button class="nav-item sales-only" data-page="page-report">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        개인 평가 리포트
+      </button>
+      <button class="nav-item admin-only" data-page="page-review" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M3 7l4-4 4 4M3 7a4 4 0 0 0 8 0M13 7l4-4 4 4M13 7a4 4 0 0 0 8 0"/></svg>
+        평가 검토
+      </button>
+      <div class="nav-label admin-only" style="display:none;">운영</div>
+      <button class="nav-item admin-only" data-page="page-dashboard" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M12 19V5M20 19v-7"/></svg>
+        팀 대시보드
+      </button>
+      <button class="nav-item admin-only" data-page="page-settings" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82"/></svg>
+        운영 설정
+      </button>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="role-switch">
+        <button class="role-btn active" id="btnRoleSales" onclick="setRole('sales')">영업 직원</button>
+        <button class="role-btn" id="btnRoleAdmin" onclick="setRole('admin')">관리자</button>
+      </div>
+      <div class="user-row">
+        <div class="avatar" id="userAvatar">강</div>
+        <div><b id="userName">강근혜</b><span id="userRole">영업1팀 · 직원</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ============ 내 업무 목록 ============ -->
+    <section class="page active" id="page-tasklist">
+      <div class="topheader">
+        <h1>업무 현황</h1>
+        <div class="header-right">
+          <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="text" placeholder="업무 검색..." /><span class="kbd">⌘K</span></div>
+          <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+          <div class="avatar" style="background:var(--gray-soft); color:var(--text-muted);">강</div>
+        </div>
+      </div>
+      <div class="page-sub"><p id="taskSub">진행 중인 영업 업무와 자동 평가 상태를 확인하세요.</p><button class="btn btn-primary" onclick="openNewTaskModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>새 업무 생성</button></div>
+
+      <div class="info-banner warn sales-only">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        <b>자료 보완이 필요한 업무가 2건 있어요.</b>&nbsp;참조 자료를 추가하면 평가가 자동으로 재개됩니다.
+      </div>
+
+      <div class="stat-row sales-only">
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>전체 업무</div>
+          <div class="stat-val">18</div>
+          <div class="stat-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 17l5-10 5 10"/></svg>4개 유형<span class="muted">· 전체</span></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>평가 진행 중</div>
+          <div class="stat-val">6</div>
+          <div class="stat-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 17l5-10 5 10"/></svg>처리율 92%<span class="muted">· 전주 대비</span></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/></svg>확정 완료</div>
+          <div class="stat-val">9</div>
+          <div class="stat-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 17l5-10 5 10"/></svg>+2<span class="muted">· 이번 주</span></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>보류 중</div>
+          <div class="stat-val">2</div>
+          <div class="stat-delta down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 7l5 10 5-10"/></svg>자료 보완 필요</div>
+        </div>
+      </div>
+
+      <div class="widget-row sales-only">
+        <div class="card widget">
+          <div class="widget-head">
+            <div class="widget-title"><div class="widget-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M12 19V5M20 19v-7"/></svg></div>업무 유형별 평균 점수</div>
+            <div class="legend-row">
+              <div class="legend-item"><span class="legend-dot" style="background:var(--primary);"></span>이번 주</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--primary-subdued); border:1px solid var(--primary);"></span>지난 주</div>
+            </div>
+          </div>
+          <div class="bars-wrap">
+            <div class="bar-tip" style="left:38%;">
+              <div class="tt-head">견적서 작성</div>
+              <div class="tt-row"><span class="dot" style="background:var(--primary);"></span>8.0점</div>
+              <div class="tt-row"><span class="dot" style="background:var(--primary-subdued); border:1px solid var(--primary);"></span>7.2점</div>
+            </div>
+            <div class="bars">
+              <div class="bar-col"><div class="bar-stack" style="height:70%;"><div class="bar-seg-1" style="height:20%;"></div><div class="bar-seg-2" style="height:80%;"></div></div><div class="bar-label">RFP분석</div></div>
+              <div class="bar-col"><div class="bar-stack" style="height:55%;"><div class="bar-seg-1" style="height:30%;"></div><div class="bar-seg-2" style="height:70%;"></div></div><div class="bar-label">제안서</div></div>
+              <div class="bar-col lead"><div class="bar-stack" style="height:80%;"><div class="bar-seg-1" style="height:10%;"></div><div class="bar-seg-2" style="height:90%;"></div></div><div class="bar-label">견적서</div></div>
+              <div class="bar-col"><div class="bar-stack" style="height:40%;"><div class="bar-seg-1" style="height:35%;"></div><div class="bar-seg-2" style="height:65%;"></div></div><div class="bar-label">질의답변</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card widget">
+          <div class="widget-head"><div class="widget-title"><div class="widget-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/></svg></div>업무 상태</div></div>
+          <div class="list-row"><span class="l">● 작성 중</span><span class="r">5</span></div>
+          <div class="list-row"><span class="l">● 평가 중</span><span class="r">6</span></div>
+          <div class="list-row"><span class="l">● 확인 대기</span><span class="r">3</span></div>
+          <div class="list-row"><span class="l">● 확정</span><span class="r">4</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <b style="font-size:15px; display:block; margin-bottom:14px;">최근 업무</b>
+        <div class="recent-row" id="recentCardRow"></div>
+      </div>
+    </section>
+
+    <!-- ============ AI 업무 공간 — 업무 목록 ============ -->
+    <section class="page" id="page-workspace-list">
+      <div class="topheader">
+        <h1>AI 업무 공간</h1>
+        <button class="btn btn-primary" onclick="openNewTaskModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          새 업무 생성
+        </button>
+      </div>
+      <div class="page-sub"><p>작업할 업무를 선택하세요. AI와 대화하며 산출물을 작성합니다.</p></div>
+
+      <div class="card">
+        <div class="tbl-head">
+          <b style="font-size:15px;">전체 업무</b>
+          <div class="filters" id="wsFilters"></div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th><span class="th-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>업무</span></th>
+              <th>업무 유형</th>
+              <th>상태</th>
+              <th><span class="th-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>최종 수정</span></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="wsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ AI 업무 공간 — 작업 화면 ============ -->
+    <section class="page" id="page-workspace">
+      <div class="topheader">
+        <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+          <button class="btn-back" onclick="goTo('page-workspace-list')" title="업무 목록으로">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h1 id="wsTitle" style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">삼성SDS향 RFP 분석</h1>
+        </div>
+        <span class="badge badge-gray" id="wsStatusBadge">작성 중</span>
+      </div>
+      <div class="page-sub" style="margin-bottom:16px;"><p id="wsSubtitle">업무 유형: RFP 요구사항 분석</p></div>
+
+      <div class="ws-grid">
+        <div class="chat-main">
+          <div class="chat-thread" id="chatThread">
+            <div class="turn user"><div class="user-bubble">이 RFP에서 보안 요구사항만 뽑아서 정리해줘</div></div>
+            <div class="turn assistant"><div class="assistant-avatar">✦</div><div class="assistant-body"><b>보안 요구사항 3건</b>을 확인했습니다. ① ISMS-P 인증 보유 ② 전송구간 암호화 ③ 접근 로그 6개월 보관</div></div>
+            <div class="turn user"><div class="user-bubble">좋아, 이 내용으로 대응표 초안 만들어줘</div></div>
+            <div class="turn assistant"><div class="assistant-avatar">✦</div><div class="assistant-body">요구사항 대응표 초안 v3을 작성했습니다. 오른쪽 패널에서 확인해보세요.</div></div>
+          </div>
+          <div class="chat-fixed-input">
+            <div class="chat-input-pill">
+              <input type="text" placeholder="AI에게 메시지 보내기…" />
+              <button class="send-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+            </div>
+            <div class="chat-hint">Enter로 전송 · Shift+Enter로 줄바꿈</div>
+          </div>
+        </div>
+
+        <div class="ws-sidebar">
+          <div class="card ws-panel">
+            <h3>업무 정보</h3>
+            <div class="ws-readonly" id="wsPurpose">목적: SI 제안 사전 분석<br/>예산: 비공개 · 필수 요구 12건</div>
+          </div>
+          <div class="card ws-panel">
+            <h3>참조 자료</h3>
+            <div id="wsRefs">
+              <div class="ref-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>RFP_원문_v2.pdf</div>
+              <div class="ref-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>제품_서비스_제공범위.pdf</div>
+            </div>
+          </div>
+          <div class="card ws-panel">
+            <div class="doc-toolbar"><h3 style="margin:0;" id="artifactTitle">요구사항 대응표</h3><span class="chip on" style="font-size:11px; padding:3px 9px;" id="artifactVersion">초안 v3</span></div>
+            <div class="doc-body" id="artifactBody">
+              <p><b>1. 보안</b><br/>ISMS-P 인증 보유 — 충족<br/>전송구간 암호화 — 충족 (TLS 1.3)</p>
+              <p><b>2. 배포</b><br/>자체 데이터센터 배포 옵션 — 충족</p>
+            </div>
+            <div class="doc-foot">
+              <button class="btn btn-ghost" style="flex:1;">초안 저장</button>
+              <button class="btn btn-primary" style="flex:1;">최종 완료</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 개인 평가 리포트 ============ -->
+    <section class="page" id="page-report">
+      <div class="topheader"><h1>개인 평가 리포트</h1><span class="badge badge-blue">확인 대기</span></div>
+      <div class="page-sub"><p>항목별 결과와 근거를 확인하고, 동의하지 않는 항목은 이의를 제기할 수 있습니다.</p></div>
+
+      <div class="widget-row">
+        <div class="card widget" style="display:flex; align-items:center; gap:24px;">
+          <svg width="112" height="112" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#EDEBFE" stroke-width="12"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#533AFD" stroke-width="12" stroke-linecap="round"
+              stroke-dasharray="326.7" stroke-dashoffset="98" transform="rotate(-90 60 60)"/>
+            <text x="60" y="56" text-anchor="middle" font-size="24" font-weight="800" fill="#15161B" font-family="Pretendard">7/10</text>
+            <text x="60" y="76" text-anchor="middle" font-size="11" fill="#9A9CA8" font-family="Pretendard">종합 점수</text>
+          </svg>
+          <div style="flex:1;">
+            <div style="font-size:16px; font-weight:700; margin-bottom:6px;">현대오토에버 견적서 작성</div>
+            <div style="display:flex; gap:7px; margin-bottom:10px;">
+              <span class="chip">견적서 작성</span>
+              <span class="chip">루브릭 v1.3</span>
+            </div>
+            <div class="more-link">전체 평가 기록 보기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="card widget">
+          <div class="widget-head"><div class="widget-title"><div class="widget-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>평가 가능 비율</div></div>
+          <div class="ring-wrap">
+            <svg width="84" height="84" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#EDEBFE" stroke-width="12"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#533AFD" stroke-width="12" stroke-linecap="round"
+                stroke-dasharray="326.7" stroke-dashoffset="65" transform="rotate(-90 60 60)"/>
+              <text x="60" y="68" text-anchor="middle" font-size="22" font-weight="800" fill="#15161B" font-family="Pretendard">80%</text>
+            </svg>
+            <div class="ring-legend">
+              <div class="rl-row"><span><span class="dot" style="background:var(--primary);"></span> 채점 완료</span><span class="rl-val">4개</span></div>
+              <div class="rl-row"><span><span class="dot" style="background:var(--gray-soft); border:1px solid var(--border-strong);"></span> 미관측</span><span class="rl-val">1개</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="rubric-row">
+          <div class="rubric-top"><div class="rubric-name"><span class="dot" style="background:var(--green);"></span>문제 정의</div><span class="badge badge-green">2점</span></div>
+          <div class="rubric-evidence">근거: 대화 #42 — 고객 예산·필수 요구가 견적 조건에 모두 반영됨</div>
+        </div>
+        <div class="rubric-row">
+          <div class="rubric-top"><div class="rubric-name"><span class="dot" style="background:var(--green);"></span>지시 품질</div><span class="badge badge-green">2점</span></div>
+          <div class="rubric-evidence">근거: AI 프롬프트에 수량·기간·범위 조건이 명시적으로 전달됨</div>
+        </div>
+        <div class="rubric-row">
+          <div class="rubric-top"><div class="rubric-name"><span class="dot" style="background:var(--amber);"></span>결과 검증</div><span class="badge badge-amber">1점</span></div>
+          <div class="rubric-evidence">근거: 할인 정책 대조는 확인됐으나, 수량별 단가 재계산 검증 기록 없음</div>
+          <div class="rubric-coach">개선 제안 · 확정 견적 생성 전, 수량 구간별 단가를 정책 문서와 1회 더 대조해보세요.</div>
+        </div>
+        <div class="rubric-row">
+          <div class="rubric-top"><div class="rubric-name"><span class="dot" style="background:var(--text-faint);"></span>보안 준수</div><span class="badge badge-gray">미관측</span></div>
+          <div class="rubric-evidence">검증 행동 기록 없음 — 0점이 아닌 미관측으로 분류되며 점수 계산에서 제외됩니다.</div>
+        </div>
+        <div class="rubric-row">
+          <div class="rubric-top"><div class="rubric-name"><span class="dot" style="background:var(--green);"></span>결과물 품질</div><span class="badge badge-green">2점</span></div>
+          <div class="rubric-evidence">근거: 최종 견적서가 고객 조건·제품 가격 자료와 일치</div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:18px;">
+        <button class="btn">이의 제기</button>
+        <button class="btn btn-primary">확인 완료</button>
+      </div>
+    </section>
+
+    <!-- ============ 평가 검토 (관리자) ============ -->
+    <section class="page" id="page-review">
+      <div class="topheader"><h1>평가 검토</h1><span class="badge badge-red">검토 중</span></div>
+      <div class="page-sub"><p>이의가 제기되었거나 채점 불일치가 감지된 건을 검토합니다. — 포스코DX RFP 분석 · TASK-2265</p></div>
+
+      <div class="review-grid">
+        <div class="card review-pane">
+          <h3>원문·산출물</h3>
+          <div class="review-body">
+            <p>§4.2 요구사항: "응답 시간 200ms 이내 처리 가능한 아키텍처를 제시할 것"</p>
+            <p>제출 산출물: "평균 응답 시간 150ms 수준의 레퍼런스 아키텍처를 적용함"</p>
+          </div>
+        </div>
+        <div class="card review-pane">
+          <h3>적용 루브릭 <span class="chip" style="font-size:10.5px; padding:2px 8px; margin-left:4px;">v1.3</span></h3>
+          <div class="review-body">
+            <p><b>요구사항 추출</b><br/>0 = 필수 요구 누락 / 1 = 일부 누락 / 2 = 전체 추출 + 원문 위치 연결</p>
+            <p>현재 채점: <span class="diff-del">1점</span> → 검토자 의견: <span class="diff-add">2점</span></p>
+          </div>
+        </div>
+        <div class="card review-pane">
+          <h3>이의 제기 내용</h3>
+          <div class="appeal-box">
+            "응답 시간 요구사항은 원문 위치(§4.2)까지 명시했는데 1점 처리됐습니다. 재검토 부탁드립니다."
+            <div style="margin-top:10px; color:var(--text-faint); font-size:12px;">— 직원 이의 제기 · 어제 18:40</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:15px 18px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:13.5px; color:var(--text-muted);">승인 시 상태가 "확정"으로 전이됩니다.</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn">보류 유지</button>
+          <button class="btn">기존 점수 유지</button>
+          <button class="btn btn-primary">2점으로 수정·확정</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 팀 대시보드 (관리자) ============ -->
+    <section class="page" id="page-dashboard">
+      <div class="topheader">
+        <h1>팀 대시보드</h1>
+        <div class="header-right">
+          <div class="dchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>10.14 - 10.20<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="width:10px;height:10px;"><path d="M6 9l6 6 6-6"/></svg></div>
+          <button class="btn btn-primary">이번 주 집계 승인</button>
+        </div>
+      </div>
+      <div class="page-sub"><p>영업1팀 · 업무 유형별 활용 역량과 반복 보완점을 확인하세요.</p></div>
+
+      <div class="info-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <b>집계 승인 마감까지 2일 남았습니다.</b>&nbsp;승인 전에는 지난 주 집계가 그대로 표시됩니다.
+      </div>
+
+      <div class="stat-row">
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/></svg>수집 건수</div>
+          <div class="stat-val">248</div>
+          <div class="stat-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 17l5-10 5 10"/></svg>12<span class="muted">· 지난주 대비</span></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M12 19V5M20 19v-7"/></svg>평가 처리율</div>
+          <div class="stat-val">92%</div>
+          <div class="stat-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 17l5-10 5 10"/></svg>3%p<span class="muted">· 지난주 대비</span></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/></svg>미관측 비율</div>
+          <div class="stat-val">11%</div>
+          <div class="stat-delta"><span class="muted">변화 없음</span></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>집계 대상</div>
+          <div class="stat-val">34명</div>
+          <div class="stat-delta"><span class="muted">4개 업무 유형</span></div>
+        </div>
+      </div>
+
+      <div class="widget-row">
+        <div class="card widget">
+          <div class="widget-head">
+            <div class="widget-title"><div class="widget-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>주간 평가 건수 추이</div>
+            <div class="more-link">더 보기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+          <div class="area-chart">
+            <div class="area-tip" style="left:58%; top:4px;"><b>340건</b>목 · 10.17 ↗5.2%</div>
+            <svg viewBox="0 0 400 150" preserveAspectRatio="none">
+              <line x1="230" y1="0" x2="230" y2="150" stroke="#D8D9E2" stroke-width="1" stroke-dasharray="4 4"/>
+              <polyline points="0,110 50,70 100,90 150,60 200,75 230,50 280,65 330,55 400,40" fill="none" stroke="#665EFD" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="230" cy="50" r="4" fill="#4434D4"/>
+            </svg>
+          </div>
+          <div class="axis-row"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+        </div>
+        <div class="card widget">
+          <div class="widget-head"><div class="widget-title"><div class="widget-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>반복 보완점 Top 3</div></div>
+          <div class="list-row"><span class="l">결과 검증 누락</span><span class="badge badge-amber">18건</span></div>
+          <div class="list-row"><span class="l">가격 정책 대조 오류</span><span class="badge badge-amber">12건</span></div>
+          <div class="list-row"><span class="l">요구사항 누락 표시</span><span class="badge badge-gray">9건</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:15px 18px; display:flex; justify-content:space-between; align-items:center;">
+        <span class="badge badge-gray">견적서 유형 · 집계 대상 4명 — 최소 인원(5명) 미달로 상세 통계 비공개</span>
+        <button class="btn btn-ghost">리포트 내보내기</button>
+      </div>
+    </section>
+
+    <!-- ============ 운영 설정 (관리자) ============ -->
+    <section class="page" id="page-settings">
+      <div class="topheader"><h1>운영 설정</h1></div>
+      <div class="page-sub"><p>사용자 권한, 제품·가격 자료, 평가 기준을 관리합니다.</p></div>
+
+      <div class="utabs">
+        <button class="utab active" data-tab="tab-a">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
+          사용자·권한
+        </button>
+        <button class="utab" data-tab="tab-b">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          제품·가격·정책 자료
+        </button>
+        <button class="utab" data-tab="tab-c">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          평가 기준 관리
+          <span class="tab-count" id="draftTabBadge" hidden></span>
+        </button>
+      </div>
+
+      <div class="settings-panel active" id="tab-a">
+        <div class="card">
+          <div class="form-row"><label>접근 범위</label><select style="padding:9px 12px; border:1px solid var(--border-strong); border-radius:8px; width:260px;"><option>영업1팀 전체</option><option>본인 업무만</option></select></div>
+          <div class="form-row"><label>민감정보 마스킹</label><div style="display:flex; align-items:center; gap:10px;"><span class="toggle"></span><span style="color:var(--text-muted); font-size:13px;">사전 정의 규칙 적용 중</span></div></div>
+        </div>
+      </div>
+
+      <div class="settings-panel" id="tab-b">
+        <div class="upload-grid">
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div class="card dropzone" id="dropzone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              <b>자료를 끌어다 놓으세요</b>
+              <p>업로드하면 AI가 평가 기준 초안을 자동으로 갱신해요</p>
+              <div class="upload-opts">
+                <select id="docType">
+                  <option value="auto">유형 자동 판별</option>
+                  <option value="product">제품 설명서</option>
+                  <option value="price">가격표</option>
+                  <option value="policy">내규·정책</option>
+                </select>
+                <button class="btn btn-primary btn-sm" id="pickFile">파일 선택</button>
+                <button class="btn btn-sm" id="sampleUpload">샘플로 체험</button>
+                <input type="file" id="fileInput" hidden accept=".pdf,.xlsx,.xls,.docx,.csv,.txt" />
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="sec-head"><h3>등록 자료</h3><span id="docCount"></span></div>
+              <table>
+                <thead><tr><th>자료</th><th>유형</th><th>버전</th><th>상태</th><th>마지막 색인</th><th>평가 기준</th></tr></thead>
+                <tbody id="docRows"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card agent-card" id="agentCard"></div>
+        </div>
+      </div>
+
+      <!-- 평가 기준 관리: 버전별 기준 열람, 초안 수정·승인 -->
+      <div class="settings-panel" id="tab-c">
+        <div class="card rb-toolbar">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <select id="rbVersion"></select>
+            <span id="rbStatus"></span>
+            <span class="rb-meta" id="rbMeta"></span>
+          </div>
+          <div style="display:flex; gap:8px;" id="rbActions"></div>
+        </div>
+        <div id="rbBanner"></div>
+
+        <div class="rb-grid">
+          <div class="card wt-list" id="wtList"></div>
+          <div id="critList"></div>
+        </div>
+
+        <div class="rb-bottom">
+          <div class="card" style="padding:4px 20px;">
+            <div class="form-row"><label>항목별 배점</label><span style="color:var(--text-muted); font-size:12.5px;">0 / 1 / 2점 · 보안 준수는 0 또는 2점만</span></div>
+            <div class="form-row"><label>미관측 처리</label><span style="color:var(--text-muted); font-size:12.5px;">0점이 아닌 미관측으로 분류, 점수 계산에서 제외</span></div>
+            <div class="form-row"><label>최소 집계 인원</label><input type="text" value="5명" style="max-width:100px;" /></div>
+          </div>
+          <div class="card" style="padding:18px;">
+            <h3 style="font-size:15px; margin-bottom:6px;">변경 이력</h3>
+            <div id="histList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== 새 업무 생성 모달 ===================== -->
+<div class="modal-overlay" id="newTaskModal" onclick="if(event.target===this) closeNewTaskModal()">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>새 업무 생성</h2>
+      <button class="icon-btn" onclick="closeNewTaskModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="field">
+        <label>업무 유형</label>
+        <select id="ntType">
+          <option value="rfp">RFP 요구사항 분석</option>
+          <option value="proposal">고객 맞춤 제안서 작성</option>
+          <option value="quote">견적서 작성</option>
+          <option value="reply">고객 질의 답변 작성</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>업무명 · 고객사</label>
+        <input type="text" id="ntTitle" placeholder="예: 카카오엔터프라이즈향 RFP 분석" />
+      </div>
+      <div class="field">
+        <label>목적 · 요구사항</label>
+        <textarea id="ntPurpose" rows="3" placeholder="업무 목적, 예산, 필수 요구사항 등을 입력하세요"></textarea>
+      </div>
+      <div class="field">
+        <label>참조 자료</label>
+        <div class="card dropzone" id="ntDropzone" style="padding:18px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <b style="font-size:13.5px;">파일을 끌어다 놓거나 선택하세요</b>
+          <button class="btn btn-sm" type="button" onclick="document.getElementById('ntFileInput').click()" style="margin-top:8px;">파일 선택</button>
+          <input type="file" id="ntFileInput" multiple hidden />
+        </div>
+        <div id="ntFileList" class="nt-file-list"></div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" onclick="closeNewTaskModal()">취소</button>
+      <button class="btn btn-primary" onclick="createTask()">생성하고 작업 시작</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+
+<div class="toast" id="toast"></div>
+
+</body>
+</html>
