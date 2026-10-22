@@ -454,12 +454,12 @@
         <h1>팀 대시보드</h1>
         <div class="header-right">
           <div class="dchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>10.14 - 10.20<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="width:10px;height:10px;"><path d="M6 9l6 6 6-6"/></svg></div>
-          <button class="btn btn-primary">이번 주 집계 승인</button>
+          <button class="btn btn-primary" id="dashboardApproveBtn">이번 주 집계 승인</button>
         </div>
       </div>
       <div class="page-sub"><p>영업1팀 · 업무 유형별 활용 역량과 반복 보완점을 확인하세요.</p></div>
 
-      <div class="info-banner">
+      <div class="info-banner" id="dashboardBanner">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
         <b>집계 승인 마감까지 2일 남았습니다.</b>&nbsp;승인 전에는 지난 주 집계가 그대로 표시됩니다.
       </div>
@@ -513,7 +513,7 @@
 
       <div class="card" style="padding:15px 18px; display:flex; justify-content:space-between; align-items:center;">
         <span class="badge badge-gray">견적서 유형 · 집계 대상 4명 — 최소 인원(5명) 미달로 상세 통계 비공개</span>
-        <button class="btn btn-ghost">리포트 내보내기</button>
+        <button class="btn btn-ghost" id="dashboardExportBtn">리포트 내보내기</button>
       </div>
     </section>
 
@@ -666,6 +666,7 @@
 <script src="js/new-task-modal.js"></script>
 <script src="js/evaluation-report.js"></script>
 <script src="js/admin-review.js"></script>
+<script src="js/team-dashboard.js"></script>
 <script src="js/admin-settings.js"></script>
 
 <div class="toast" id="toast"></div>
