@@ -1,8 +1,8 @@
 /* ---------- 로그인 / 회사 신규가입 폼 ---------- */
-function enterApp(role){
+function enterApp(role, landingId){
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('appShell').style.display = 'flex';
-  setRole(role);
+  setRole(role, landingId);
 }
 
 function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
@@ -105,3 +105,12 @@ document.querySelectorAll('.auth-tab').forEach(t => t.addEventListener('click', 
   t.classList.add('active');
   document.getElementById('auth-' + t.dataset.auth).classList.add('active');
 }));
+
+/* ---------- 세션 복원 (새로고침해도 로그인 유지) ---------- */
+(function restoreSession(){
+  const role = sessionStorage.getItem('role');
+  if (!role) return;
+  const hashPage = location.hash.slice(1);
+  const lastPage = (hashPage && document.getElementById(hashPage)) ? hashPage : sessionStorage.getItem('lastPage');
+  enterApp(role, lastPage || undefined);
+})();
