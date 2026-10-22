@@ -72,14 +72,24 @@ function openWorkspace(id){
   goTo('page-workspace');
 }
 
+let taskSearchQuery = '';
+
 function renderRecentCards(){
-  $('#recentCardRow').innerHTML = Object.entries(TASKS).map(([id, t]) => `
+  const q = taskSearchQuery.trim().toLowerCase();
+  const entries = Object.entries(TASKS).filter(([, t]) => !q || t.title.toLowerCase().includes(q));
+  $('#recentCardRow').innerHTML = entries.map(([id, t]) => `
     <button class="ws-card" onclick="openWorkspace('${id}')">
       <div class="ws-card-top"><span class="badge ${t.statusClass}">${t.status}</span><span class="mono">${t.updated}</span></div>
       <div class="ws-card-title">${esc(t.title)}</div>
       <div class="ws-card-type">${esc(t.type)}</div>
     </button>
   `).join('');
+  document.getElementById('recentEmptyState').hidden = entries.length > 0;
+}
+
+function setTaskSearchQuery(q){
+  taskSearchQuery = q;
+  renderRecentCards();
 }
 
 const TYPE_FILTERS = [
@@ -122,3 +132,4 @@ document.getElementById('wsFilters').addEventListener('click', e => {
   const chip = e.target.closest('[data-filter]');
   if (chip) setWsFilter(chip.dataset.filter);
 });
+document.getElementById('taskSearchInput').addEventListener('input', e => setTaskSearchQuery(e.target.value));
