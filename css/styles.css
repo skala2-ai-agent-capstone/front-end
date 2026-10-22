@@ -118,6 +118,17 @@
   .field input, .field select, .field textarea{width:100%; padding:11px 13px; border:1px solid var(--border-strong); border-radius:9px; background:var(--card); font-size:15px; font-family:inherit;}
   .field textarea{resize:vertical; line-height:1.5;}
   .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-subdued);}
+  .field.invalid input{border-color:var(--red);}
+  .field.invalid input:focus{box-shadow:0 0 0 3px var(--red-soft);}
+  .field-error{display:none; margin-top:6px; font-size:12.5px; color:var(--red); font-weight:600;}
+  .field-error.show{display:block;}
+  .link-btn{border:none; background:none; padding:0; color:var(--primary); font-weight:700; font-size:inherit; font-family:inherit; cursor:pointer;}
+  .link-btn:hover{text-decoration:underline;}
+  .auth-notice{display:none; margin-top:12px; padding:10px 12px; border-radius:9px; background:var(--green-soft); color:var(--green-dark); font-size:12.5px; text-align:center;}
+  .auth-notice.show{display:block;}
+  .auth-submit.is-loading{opacity:.7; pointer-events:none;}
+  .auth-success b{display:block; font-size:16px; margin-bottom:8px;}
+  .auth-success p{margin:0; font-size:13.5px; color:var(--text-muted); line-height:1.6;}
 
   /* ================= 새 업무 생성 모달 ================= */
   .modal-overlay{
