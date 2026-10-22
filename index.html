@@ -410,7 +410,7 @@
 
     <!-- ============ 평가 검토 (관리자) ============ -->
     <section class="page" id="page-review">
-      <div class="topheader"><h1>평가 검토</h1><span class="badge badge-red">검토 중</span></div>
+      <div class="topheader"><h1>평가 검토</h1><span class="badge badge-red" id="reviewStatusBadge">검토 중</span></div>
       <div class="page-sub"><p>이의가 제기되었거나 채점 불일치가 감지된 건을 검토합니다. — 포스코DX RFP 분석 · TASK-2265</p></div>
 
       <div class="review-grid">
@@ -426,6 +426,7 @@
           <div class="review-body">
             <p><b>요구사항 추출</b><br/>0 = 필수 요구 누락 / 1 = 일부 누락 / 2 = 전체 추출 + 원문 위치 연결</p>
             <p>현재 채점: <span class="diff-del">1점</span> → 검토자 의견: <span class="diff-add">2점</span></p>
+            <p id="reviewFinalNote" hidden style="margin-top:8px; color:var(--text-muted);">최종 반영: <b id="reviewFinalScore"></b></p>
           </div>
         </div>
         <div class="card review-pane">
@@ -438,11 +439,11 @@
       </div>
 
       <div class="card" style="padding:15px 18px; display:flex; justify-content:space-between; align-items:center;">
-        <div style="font-size:13.5px; color:var(--text-muted);">승인 시 상태가 "확정"으로 전이됩니다.</div>
+        <div style="font-size:13.5px; color:var(--text-muted);" id="reviewFootNote">승인 시 상태가 "확정"으로 전이됩니다.</div>
         <div style="display:flex; gap:8px;">
-          <button class="btn">보류 유지</button>
-          <button class="btn">기존 점수 유지</button>
-          <button class="btn btn-primary">2점으로 수정·확정</button>
+          <button class="btn" id="reviewHoldBtn">보류 유지</button>
+          <button class="btn" id="reviewKeepBtn">기존 점수 유지</button>
+          <button class="btn btn-primary" id="reviewOverrideBtn">2점으로 수정·확정</button>
         </div>
       </div>
     </section>
@@ -664,6 +665,7 @@
 <script src="js/workspace.js"></script>
 <script src="js/new-task-modal.js"></script>
 <script src="js/evaluation-report.js"></script>
+<script src="js/admin-review.js"></script>
 <script src="js/admin-settings.js"></script>
 
 <div class="toast" id="toast"></div>
