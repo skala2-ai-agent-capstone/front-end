@@ -104,10 +104,14 @@
       <span class="brand-name">세일즈 AI 코치</span>
     </div>
 
-    <div class="workspace-switch">
+    <div class="workspace-switch" id="workspaceSwitch">
       <div class="wmark"></div>
       <div class="wtext"><b>영업1팀</b><span>34명 · 삼성SDS</span></div>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 9l4 4 4-4M8 15l4-4 4 4"/></svg>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 9l4 4 4-4M8 15l4-4 4 4"/></svg>
+      <div class="workspace-menu">
+        <div class="workspace-menu-item active">삼성SDS · 영업1팀 (현재)</div>
+        <div class="workspace-menu-item disabled">+ 다른 회사로 전환 (준비 중)</div>
+      </div>
     </div>
 
     <div id="mainNav">
@@ -147,7 +151,10 @@
       </div>
       <div class="user-row">
         <div class="avatar" id="userAvatar">강</div>
-        <div><b id="userName">강근혜</b><span id="userRole">영업1팀 · 직원</span></div>
+        <div style="flex:1; min-width:0;"><b id="userName">강근혜</b><span id="userRole">영업1팀 · 직원</span></div>
+        <button class="logout-btn" onclick="logout()" title="로그아웃">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
       </div>
     </div>
   </aside>

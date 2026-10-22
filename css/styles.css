@@ -172,14 +172,30 @@
   .brand-name{font-size:15px; font-weight:700;}
 
   .workspace-switch{
-    display:flex; align-items:center; gap:9px; padding:9px 10px; border:1px solid var(--border);
-    border-radius:11px; margin-bottom:16px; background:var(--card); box-shadow:var(--shadow-card);
+    position:relative; display:flex; align-items:center; gap:9px; padding:9px 10px; border:1px solid var(--border);
+    border-radius:11px; margin-bottom:16px; background:var(--card); box-shadow:var(--shadow-card); cursor:pointer;
   }
   .workspace-switch .wmark{width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--primary-line),var(--primary-dark)); flex:none;}
   .workspace-switch .wtext{flex:1; min-width:0;}
   .workspace-switch .wtext b{display:block; font-size:13.5px;}
   .workspace-switch .wtext span{font-size:11.5px; color:var(--text-faint);}
   .workspace-switch svg{width:14px; height:14px; color:var(--text-faint); flex:none;}
+  .workspace-switch .chev{transition:transform .15s;}
+  .workspace-switch.open .chev{transform:rotate(180deg);}
+  .workspace-menu{
+    display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:20;
+    background:var(--card); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow-shell); padding:6px;
+  }
+  .workspace-switch.open .workspace-menu{display:block;}
+  .workspace-menu-item{padding:9px 10px; border-radius:7px; font-size:13px; font-weight:600; color:var(--text-muted);}
+  .workspace-menu-item.active{color:var(--text); background:var(--gray-soft);}
+  .workspace-menu-item.disabled{color:var(--text-faint); cursor:default;}
+  .logout-btn{
+    width:30px; height:30px; border-radius:9px; border:none; background:transparent; color:var(--text-faint);
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .logout-btn:hover{background:var(--red-soft); color:var(--red);}
+  .logout-btn svg{width:16px; height:16px;}
 
   .nav-label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); padding:12px 10px 6px;}
   .nav-item{
