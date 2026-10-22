@@ -293,6 +293,10 @@
             <div class="turn assistant"><div class="assistant-avatar">✦</div><div class="assistant-body">요구사항 대응표 초안 v3을 작성했습니다. 오른쪽 패널에서 확인해보세요.</div></div>
           </div>
           <div class="chat-fixed-input">
+            <button class="btn btn-ghost btn-sm lf-trigger" id="liveFeedbackBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>
+              실시간 피드백
+            </button>
             <div class="chat-input-pill">
               <input type="text" id="chatInput" placeholder="AI에게 메시지 보내기…" />
               <button class="send-btn" id="chatSendBtn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
@@ -302,6 +306,12 @@
         </div>
 
         <div class="ws-sidebar">
+          <div class="card ws-panel" id="liveFeedbackPanel">
+            <h3>실시간 피드백</h3>
+            <div id="liveFeedbackBody">
+              <p class="task-sub">대화 중 프롬프팅 품질을 바로 확인해보세요.</p>
+            </div>
+          </div>
           <div class="card ws-panel">
             <h3>업무 정보</h3>
             <div class="ws-readonly" id="wsPurpose">목적: SI 제안 사전 분석<br/>예산: 비공개 · 필수 요구 12건</div>
@@ -664,6 +674,7 @@
 <script src="js/auth.js"></script>
 <script src="js/workspace.js"></script>
 <script src="js/new-task-modal.js"></script>
+<script src="js/live-feedback.js"></script>
 <script src="js/evaluation-report.js"></script>
 <script src="js/admin-review.js"></script>
 <script src="js/team-dashboard.js"></script>

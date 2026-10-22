@@ -52,6 +52,7 @@ let currentTaskId = 'rfp';
 
 function switchTask(id){
   currentTaskId = id;
+  resetLiveFeedbackPanel();
   const t = TASKS[id];
   document.getElementById('wsTitle').textContent = t.title;
   document.getElementById('wsSubtitle').textContent = '업무 유형: ' + t.type;
