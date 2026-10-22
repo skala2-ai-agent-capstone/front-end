@@ -540,8 +540,8 @@
 
       <div class="settings-panel active" id="tab-a">
         <div class="card">
-          <div class="form-row"><label>접근 범위</label><select style="padding:9px 12px; border:1px solid var(--border-strong); border-radius:8px; width:260px;"><option>영업1팀 전체</option><option>본인 업무만</option></select></div>
-          <div class="form-row"><label>민감정보 마스킹</label><div style="display:flex; align-items:center; gap:10px;"><span class="toggle"></span><span style="color:var(--text-muted); font-size:13px;">사전 정의 규칙 적용 중</span></div></div>
+          <div class="form-row"><label>접근 범위</label><select id="accessScopeSelect" style="padding:9px 12px; border:1px solid var(--border-strong); border-radius:8px; width:260px;"><option>영업1팀 전체</option><option>본인 업무만</option></select></div>
+          <div class="form-row"><label>민감정보 마스킹</label><div style="display:flex; align-items:center; gap:10px;"><span class="toggle" id="maskingToggle" role="switch" aria-checked="true" tabindex="0"></span><span style="color:var(--text-muted); font-size:13px;" id="maskingStatusText">사전 정의 규칙 적용 중</span></div></div>
         </div>
       </div>
 
@@ -667,6 +667,7 @@
 <script src="js/evaluation-report.js"></script>
 <script src="js/admin-review.js"></script>
 <script src="js/team-dashboard.js"></script>
+<script src="js/admin-user-access.js"></script>
 <script src="js/admin-settings.js"></script>
 
 <div class="toast" id="toast"></div>
