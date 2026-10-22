@@ -424,6 +424,7 @@
   .doc-foot{display:flex; gap:8px; margin-top:12px;}
   .send-btn{width:38px; height:38px; border-radius:50%; background:var(--primary); border:none; color:#fff; display:flex; align-items:center; justify-content:center; flex:none;}
   .send-btn svg{width:15px; height:15px;}
+  .send-btn:disabled{opacity:.5; cursor:default;}
 
   /* review screen */
   .review-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px;}

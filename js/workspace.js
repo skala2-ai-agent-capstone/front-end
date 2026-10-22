@@ -48,7 +48,10 @@ const TASKS = {
   }
 };
 
+let currentTaskId = 'rfp';
+
 function switchTask(id){
+  currentTaskId = id;
   const t = TASKS[id];
   document.getElementById('wsTitle').textContent = t.title;
   document.getElementById('wsSubtitle').textContent = '업무 유형: ' + t.type;
@@ -70,6 +73,56 @@ function switchTask(id){
 function openWorkspace(id){
   switchTask(id);
   goTo('page-workspace');
+}
+
+/* ---------- AI 채팅 상호작용 ---------- */
+const AI_REPLIES = [
+  '확인했습니다. 요청하신 내용을 반영해 오른쪽 패널의 산출물을 업데이트했어요.',
+  '말씀하신 조건으로 다시 정리했습니다. 추가로 확인이 필요한 부분이 있으면 말씀해주세요.',
+  '참조 자료와 대조한 결과를 반영했습니다. 변경된 내용은 산출물 패널에서 확인할 수 있어요.',
+];
+let aiReplyIndex = 0;
+
+function appendChatTurn(role, html){
+  const thread = document.getElementById('chatThread');
+  thread.insertAdjacentHTML('beforeend',
+    role === 'user'
+      ? `<div class="turn user"><div class="user-bubble">${html}</div></div>`
+      : `<div class="turn assistant"><div class="assistant-avatar">✦</div><div class="assistant-body">${html}</div></div>`
+  );
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function sendChatMessage(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !currentTaskId) return;
+
+  const task = TASKS[currentTaskId];
+  const userText = esc(text);
+  task.messages.push({role:'user', text:userText});
+  appendChatTurn('user', userText);
+  input.value = '';
+
+  const sendBtn = document.getElementById('chatSendBtn');
+  sendBtn.disabled = true;
+
+  const thread = document.getElementById('chatThread');
+  const typingId = 'typing-' + Date.now();
+  thread.insertAdjacentHTML('beforeend', `<div class="turn assistant" id="${typingId}"><div class="assistant-avatar">✦</div><div class="assistant-body">···</div></div>`);
+  thread.scrollTop = thread.scrollHeight;
+
+  setTimeout(() => {
+    const reply = AI_REPLIES[aiReplyIndex % AI_REPLIES.length];
+    aiReplyIndex++;
+    document.getElementById(typingId).remove();
+    task.messages.push({role:'ai', text:reply});
+    appendChatTurn('ai', reply);
+    task.updated = '방금 전';
+    renderWsTable();
+    renderRecentCards();
+    sendBtn.disabled = false;
+  }, 700);
 }
 
 let taskSearchQuery = '';
@@ -133,3 +186,11 @@ document.getElementById('wsFilters').addEventListener('click', e => {
   if (chip) setWsFilter(chip.dataset.filter);
 });
 document.getElementById('taskSearchInput').addEventListener('input', e => setTaskSearchQuery(e.target.value));
+
+document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendChatMessage();
+  }
+});
