@@ -26,18 +26,43 @@
         </div>
 
         <div class="auth-panel active" id="auth-login">
-          <div class="field"><label>이메일</label><input type="text" value="keunhye@sdscorp.co.kr" /></div>
-          <div class="field"><label>비밀번호</label><input type="password" value="••••••••••" /></div>
-          <button class="btn btn-primary auth-submit">로그인</button>
-          <div class="auth-foot">비밀번호를 잊으셨나요? <b style="color:var(--text);">재설정하기</b></div>
+          <form id="loginForm" novalidate>
+            <div class="field">
+              <label for="loginEmail">이메일</label>
+              <input type="text" id="loginEmail" placeholder="you@company.com" autocomplete="username" />
+              <div class="field-error" id="loginEmailError"></div>
+            </div>
+            <div class="field">
+              <label for="loginPassword">비밀번호</label>
+              <input type="password" id="loginPassword" placeholder="비밀번호 입력" autocomplete="current-password" />
+              <div class="field-error" id="loginPasswordError"></div>
+            </div>
+            <button type="submit" class="btn btn-primary auth-submit" id="loginSubmitBtn">로그인</button>
+            <div class="auth-foot">비밀번호를 잊으셨나요? <button type="button" class="link-btn" id="forgotPasswordBtn">재설정하기</button></div>
+            <div class="auth-notice" id="forgotPasswordNotice"></div>
+          </form>
         </div>
 
         <div class="auth-panel" id="auth-signup">
-          <div class="field"><label>회사명</label><input type="text" placeholder="예: 삼성SDS" /></div>
-          <div class="field"><label>관리자 이메일</label><input type="text" placeholder="admin@company.com" /></div>
-          <div class="field"><label>비밀번호</label><input type="password" placeholder="8자 이상" /></div>
-          <button class="btn btn-primary auth-submit">회사 워크스페이스 생성</button>
-          <div class="auth-foot">가입하면 이메일로 인증 링크가 발송됩니다</div>
+          <form id="signupForm" novalidate>
+            <div class="field">
+              <label for="signupCompany">회사명</label>
+              <input type="text" id="signupCompany" placeholder="예: 삼성SDS" />
+              <div class="field-error" id="signupCompanyError"></div>
+            </div>
+            <div class="field">
+              <label for="signupEmail">관리자 이메일</label>
+              <input type="text" id="signupEmail" placeholder="admin@company.com" autocomplete="username" />
+              <div class="field-error" id="signupEmailError"></div>
+            </div>
+            <div class="field">
+              <label for="signupPassword">비밀번호</label>
+              <input type="password" id="signupPassword" placeholder="8자 이상" autocomplete="new-password" />
+              <div class="field-error" id="signupPasswordError"></div>
+            </div>
+            <button type="submit" class="btn btn-primary auth-submit" id="signupSubmitBtn">회사 워크스페이스 생성</button>
+            <div class="auth-foot">가입하면 이메일로 인증 링크가 발송됩니다</div>
+          </form>
         </div>
 
         <div class="auth-divider">데모로 바로 둘러보기</div>
