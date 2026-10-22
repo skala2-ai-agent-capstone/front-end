@@ -330,7 +330,7 @@
 
     <!-- ============ 개인 평가 리포트 ============ -->
     <section class="page" id="page-report">
-      <div class="topheader"><h1>개인 평가 리포트</h1><span class="badge badge-blue">확인 대기</span></div>
+      <div class="topheader"><h1>개인 평가 리포트</h1><span class="badge badge-blue" id="reportStatusBadge">확인 대기</span></div>
       <div class="page-sub"><p>항목별 결과와 근거를 확인하고, 동의하지 않는 항목은 이의를 제기할 수 있습니다.</p></div>
 
       <div class="widget-row">
@@ -392,9 +392,19 @@
         </div>
       </div>
 
+      <div class="card" id="appealForm" hidden style="margin-top:18px;">
+        <h3 style="margin:0 0 10px;">이의 제기 사유</h3>
+        <textarea id="appealReason" placeholder="어떤 항목의 평가에 동의하지 않는지, 근거와 함께 적어주세요." style="width:100%; min-height:88px; padding:11px 13px; border:1px solid var(--border-strong); border-radius:9px; font:inherit; resize:vertical;"></textarea>
+        <div class="field-error" id="appealReasonError"></div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+          <button class="btn" id="appealCancelBtn">취소</button>
+          <button class="btn btn-primary" id="appealSubmitBtn">이의 제기 제출</button>
+        </div>
+      </div>
+
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:18px;">
-        <button class="btn">이의 제기</button>
-        <button class="btn btn-primary">확인 완료</button>
+        <button class="btn" id="reportAppealBtn">이의 제기</button>
+        <button class="btn btn-primary" id="reportConfirmBtn">확인 완료</button>
       </div>
     </section>
 
@@ -653,6 +663,7 @@
 <script src="js/auth.js"></script>
 <script src="js/workspace.js"></script>
 <script src="js/new-task-modal.js"></script>
+<script src="js/evaluation-report.js"></script>
 <script src="js/admin-settings.js"></script>
 
 <div class="toast" id="toast"></div>
