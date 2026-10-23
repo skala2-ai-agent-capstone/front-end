@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { stageBadgeClass } from '../utils/stage';
 import NewTaskModal from '../components/NewTaskModal';
 
 export default function WorkspaceListPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [works, setWorks] = useState(null);
   const [workTypes, setWorkTypes] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState(searchParams.get('q') || '');
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState('');
 
@@ -22,8 +24,9 @@ export default function WorkspaceListPage() {
 
   const rows = useMemo(() => {
     if (!works) return [];
-    return works.filter((w) => filter === 'all' || w.workType === filter);
-  }, [works, filter]);
+    const q = search.trim().toLowerCase();
+    return works.filter((w) => (filter === 'all' || w.workType === filter) && (!q || w.title.toLowerCase().includes(q)));
+  }, [works, filter, search]);
 
   function initialOf(w) {
     return (w.workTypeLabel || w.title || '?').slice(0, 2).toUpperCase();
@@ -38,10 +41,16 @@ export default function WorkspaceListPage() {
     <section className="page active">
       <div className="topheader">
         <h1>AI 업무 공간</h1>
-        <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
-          새 업무 생성
-        </button>
+        <div className="header-right">
+          <div className="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+            <input type="text" placeholder="업무 검색..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          </div>
+          <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
+            새 업무 생성
+          </button>
+        </div>
       </div>
       <div className="page-sub"><p>작업할 업무를 선택하세요. AI와 대화하며 산출물을 작성합니다.</p></div>
 
