@@ -2,9 +2,8 @@
 // Prod build: needs either backend CORS support or a reverse proxy serving /api from the same origin.
 const BASE_URL = '';
 
-// The published Swagger spec shows camelCase, but the backend's actual wire format is snake_case
-// (confirmed by hitting /api/auth/login directly). Convert at the boundary so the rest of the app
-// can keep using camelCase field names.
+// The backend's wire format is snake_case (confirmed by hitting /api/auth/login directly).
+// Convert at the boundary so the rest of the app can keep using camelCase field names.
 const camelToSnake = (str) => str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
 const snakeToCamel = (str) => str.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
 
@@ -22,17 +21,7 @@ function getToken() {
   return sessionStorage.getItem('accessToken');
 }
 
-async function request(method, path, body) {
-  const token = getToken();
-  const res = await fetch(BASE_URL + path, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: body !== undefined ? JSON.stringify(deepTransformKeys(body, camelToSnake)) : undefined,
-  });
-
+async function handleResponse(res) {
   let rawJson = null;
   try { rawJson = await res.json(); } catch { /* empty body */ }
   const json = rawJson ? deepTransformKeys(rawJson, snakeToCamel) : null;
@@ -48,7 +37,31 @@ async function request(method, path, body) {
   return json.data;
 }
 
+async function request(method, path, body) {
+  const token = getToken();
+  const res = await fetch(BASE_URL + path, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: body !== undefined ? JSON.stringify(deepTransformKeys(body, camelToSnake)) : undefined,
+  });
+  return handleResponse(res);
+}
+
+async function requestForm(method, path, formData) {
+  const token = getToken();
+  const res = await fetch(BASE_URL + path, {
+    method,
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: formData,
+  });
+  return handleResponse(res);
+}
+
 export const api = {
   get: (path) => request('GET', path),
   post: (path, body) => request('POST', path, body),
+  postForm: (path, formData) => requestForm('POST', path, formData),
 };

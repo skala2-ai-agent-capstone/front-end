@@ -1,36 +1,62 @@
-import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { api } from '../api/client';
 import { useApp } from '../context/AppContext';
 
-const TYPE_OPTIONS = [
-  ['rfp', 'RFP 요구사항 분석'],
-  ['proposal', '고객 맞춤 제안서 작성'],
-  ['quote', '견적서 작성'],
-  ['reply', '고객 질의 답변 작성'],
-];
-
-export default function NewTaskModal({ onClose }) {
-  const { createTask } = useApp();
-  const navigate = useNavigate();
-  const [typeKey, setTypeKey] = useState('rfp');
+export default function NewTaskModal({ onClose, onCreated, workTypes }) {
+  const { toast } = useApp();
+  const [typeKey, setTypeKey] = useState(workTypes[0]?.workType || '');
   const [title, setTitle] = useState('');
+  const [customerId, setCustomerId] = useState('');
   const [purpose, setPurpose] = useState('');
+  const [extraFields, setExtraFields] = useState({});
+  const [customers, setCustomers] = useState([]);
   const [files, setFiles] = useState([]);
   const [dragging, setDragging] = useState(false);
+  const [busy, setBusy] = useState(false);
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+    api.get('/api/customers').then(setCustomers).catch(() => setCustomers([]));
+  }, []);
+
+  const selectedType = workTypes.find((t) => t.workType === typeKey);
+  const extraRegFields = (selectedType?.registrationFields || []).filter((f) => f.key !== 'purpose');
+
   function addFiles(fileList) {
-    setFiles((prev) => [...prev, ...Array.from(fileList).map((f) => f.name)]);
+    setFiles((prev) => [...prev, ...Array.from(fileList)]);
   }
 
   function removeFile(i) {
     setFiles((prev) => prev.filter((_, idx) => idx !== i));
   }
 
-  function handleCreate() {
-    const id = createTask(typeKey, title.trim(), purpose.trim(), files);
-    onClose();
-    navigate(`/workspace/${id}`);
+  async function handleCreate() {
+    if (!title.trim()) { toast('업무명을 입력하세요'); return; }
+    setBusy(true);
+    try {
+      const registration = { ...extraFields };
+      const body = {
+        title: title.trim(),
+        workType: typeKey || undefined,
+        customerId: customerId || undefined,
+        purpose: purpose.trim() || undefined,
+        registration: Object.keys(registration).length ? registration : undefined,
+      };
+      const detail = await api.post('/api/works', body);
+      const workId = detail.summary.workId;
+
+      for (const file of files) {
+        const form = new FormData();
+        form.append('file', file);
+        await api.postForm(`/api/works/${workId}/source-documents`, form);
+      }
+
+      onCreated(workId);
+    } catch (err) {
+      toast(err.message);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -47,17 +73,32 @@ export default function NewTaskModal({ onClose }) {
           <div className="field">
             <label>업무 유형</label>
             <select value={typeKey} onChange={(e) => setTypeKey(e.target.value)}>
-              {TYPE_OPTIONS.map(([key, label]) => <option key={key} value={key}>{label}</option>)}
+              <option value="">유형 미정 (나중에 분류)</option>
+              {workTypes.map((t) => <option key={t.workType} value={t.workType}>{t.label}</option>)}
             </select>
           </div>
           <div className="field">
-            <label>업무명 · 고객사</label>
+            <label>업무명</label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="예: 카카오엔터프라이즈향 RFP 분석" />
+          </div>
+          <div className="field">
+            <label>고객사</label>
+            <select value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
+              <option value="">고객 미지정</option>
+              {customers.map((c) => <option key={c.customerId} value={c.customerId}>{c.name}</option>)}
+            </select>
           </div>
           <div className="field">
             <label>목적 · 요구사항</label>
             <textarea rows={3} value={purpose} onChange={(e) => setPurpose(e.target.value)} placeholder="업무 목적, 예산, 필수 요구사항 등을 입력하세요" />
           </div>
+          {extraRegFields.map((f) => (
+            <div className="field" key={f.key}>
+              <label>{f.label}</label>
+              <input type="text" value={extraFields[f.key] || ''}
+                onChange={(e) => setExtraFields((prev) => ({ ...prev, [f.key]: e.target.value }))} />
+            </div>
+          ))}
           <div className="field">
             <label>고객 자료</label>
             <p className="task-sub" style={{ margin: '-6px 0 8px' }}>RFP 원문, 정정 공고, 회의록 등 고객이 보낸 자료를 올려주세요. 사내 자료는 AI가 자동으로 참고해요.</p>
@@ -74,10 +115,10 @@ export default function NewTaskModal({ onClose }) {
               <input ref={fileInputRef} type="file" multiple hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ''; }} />
             </div>
             <div className="nt-file-list">
-              {files.map((name, i) => (
-                <div key={`${name}-${i}`} className="nt-file-chip">
+              {files.map((file, i) => (
+                <div key={`${file.name}-${i}`} className="nt-file-chip">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
-                  <span>{name}</span>
+                  <span>{file.name}</span>
                   <button onClick={() => removeFile(i)} title="제거">×</button>
                 </div>
               ))}
@@ -86,8 +127,8 @@ export default function NewTaskModal({ onClose }) {
         </div>
 
         <div className="modal-foot">
-          <button className="btn" onClick={onClose}>취소</button>
-          <button className="btn btn-primary" onClick={handleCreate}>생성하고 작업 시작</button>
+          <button className="btn" onClick={onClose} disabled={busy}>취소</button>
+          <button className="btn btn-primary" onClick={handleCreate} disabled={busy}>{busy ? '생성 중…' : '생성하고 작업 시작'}</button>
         </div>
       </div>
     </div>

@@ -1,22 +1,37 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
-import { TASK_INITIALS, TYPE_FILTERS } from '../data/tasks';
+import { api } from '../api/client';
+import { stageBadgeClass } from '../utils/stage';
 import NewTaskModal from '../components/NewTaskModal';
 
 export default function WorkspaceListPage() {
-  const { tasks } = useApp();
   const navigate = useNavigate();
+  const [works, setWorks] = useState(null);
+  const [workTypes, setWorkTypes] = useState([]);
   const [filter, setFilter] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState('');
 
-  const rows = useMemo(
-    () => Object.entries(tasks).filter(([, t]) => filter === 'all' || t.typeKey === filter),
-    [tasks, filter],
-  );
+  const load = useCallback(() => {
+    Promise.all([api.get('/api/works?scope=mine'), api.get('/api/work-types')])
+      .then(([w, types]) => { setWorks(w); setWorkTypes(types); })
+      .catch((err) => setError(err.message));
+  }, []);
 
-  function initialOf(id, t) {
-    return TASK_INITIALS[t.typeKey] || id.slice(0, 2).toUpperCase();
+  useEffect(load, [load]);
+
+  const rows = useMemo(() => {
+    if (!works) return [];
+    return works.filter((w) => filter === 'all' || w.workType === filter);
+  }, [works, filter]);
+
+  function initialOf(w) {
+    return (w.workTypeLabel || w.title || '?').slice(0, 2).toUpperCase();
+  }
+
+  function handleCreated(workId) {
+    setModalOpen(false);
+    navigate(`/workspace/${workId}`);
   }
 
   return (
@@ -30,12 +45,15 @@ export default function WorkspaceListPage() {
       </div>
       <div className="page-sub"><p>작업할 업무를 선택하세요. AI와 대화하며 산출물을 작성합니다.</p></div>
 
+      {error && <p className="task-sub" style={{ color: 'var(--red)' }}>{error}</p>}
+
       <div className="card">
         <div className="tbl-head">
           <b style={{ fontSize: 15 }}>전체 업무</b>
           <div className="filters">
-            {TYPE_FILTERS.map(([key, label]) => (
-              <span key={key} className={`chip${filter === key ? ' on' : ''}`} onClick={() => setFilter(key)}>{label}</span>
+            <span className={`chip${filter === 'all' ? ' on' : ''}`} onClick={() => setFilter('all')}>전체</span>
+            {workTypes.map((t) => (
+              <span key={t.workType} className={`chip${filter === t.workType ? ' on' : ''}`} onClick={() => setFilter(t.workType)}>{t.label}</span>
             ))}
           </div>
         </div>
@@ -50,19 +68,19 @@ export default function WorkspaceListPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map(([id, t]) => (
-              <tr key={id}>
+            {rows.map((w) => (
+              <tr key={w.workId}>
                 <td>
                   <div className="task-name-cell">
-                    <div className="avatar" style={{ background: 'var(--gray-soft)', color: 'var(--text-muted)' }}>{initialOf(id, t)}</div>
-                    <div><div className="task-name">{t.title}</div><div className="task-sub">{id.toUpperCase()}</div></div>
+                    <div className="avatar" style={{ background: 'var(--gray-soft)', color: 'var(--text-muted)' }}>{initialOf(w)}</div>
+                    <div><div className="task-name">{w.title}</div><div className="task-sub">{w.workId}</div></div>
                   </div>
                 </td>
-                <td>{t.type}</td>
-                <td><span className={`badge ${t.statusClass}`}>{t.status}</span></td>
-                <td className="mono">{t.updated}</td>
+                <td>{w.workTypeLabel || '유형 미정'}</td>
+                <td><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span></td>
+                <td className="mono">{new Date(w.updatedAt).toLocaleString()}</td>
                 <td style={{ textAlign: 'right' }}>
-                  <button className="btn-open" onClick={() => navigate(`/workspace/${id}`)}>
+                  <button className="btn-open" onClick={() => navigate(`/workspace/${w.workId}`)}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>열기
                   </button>
                 </td>
@@ -70,9 +88,10 @@ export default function WorkspaceListPage() {
             ))}
           </tbody>
         </table>
+        {works && rows.length === 0 && <p className="task-sub" style={{ padding: 16 }}>업무가 없어요.</p>}
       </div>
 
-      {modalOpen && <NewTaskModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && <NewTaskModal onClose={() => setModalOpen(false)} onCreated={handleCreated} workTypes={workTypes} />}
     </section>
   );
 }
