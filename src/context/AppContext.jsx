@@ -27,6 +27,18 @@ export function AppProvider({ children }) {
     setUser(data.user);
   }, []);
 
+  const signup = useCallback(async ({ employeeNo, password, name, companyId, teamId }) => {
+    const data = await api.post('/api/auth/signup', {
+      employeeNo: Number(employeeNo),
+      password,
+      name,
+      companyId,
+      teamId: teamId || undefined,
+    });
+    sessionStorage.setItem('accessToken', data.accessToken);
+    setUser(data.user);
+  }, []);
+
   const logout = useCallback(() => {
     sessionStorage.removeItem('accessToken');
     setUser(null);
@@ -34,9 +46,9 @@ export function AppProvider({ children }) {
 
   const value = useMemo(() => ({
     isLoggedIn: !!user, authLoading, user, role: user?.role, profile: user,
-    login, logout,
+    login, signup, logout,
     toast, toastState,
-  }), [user, authLoading, toastState, login, logout, toast]);
+  }), [user, authLoading, toastState, login, signup, logout, toast]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
