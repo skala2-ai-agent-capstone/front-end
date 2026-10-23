@@ -1,17 +1,13 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AI_REPLIES, INITIAL_TASKS, TYPE_META } from '../data/tasks';
 import { escapeHtml } from '../utils/escapeHtml';
+import { api } from '../api/client';
 
 const AppContext = createContext(null);
 
-export const ROLE_PROFILE = {
-  sales: { avatar: '강', name: '강근혜', roleLabel: '영업1팀 · 직원' },
-  admin: { avatar: '권', name: '권하림', roleLabel: '영업1팀 · 관리자' },
-};
-
 export function AppProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem('role') != null);
-  const [role, setRoleState] = useState(() => sessionStorage.getItem('role') || 'sales');
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [toastState, setToastState] = useState({ message: '', key: 0 });
   const aiReplyIndexRef = useRef(0);
@@ -20,21 +16,24 @@ export function AppProvider({ children }) {
     setToastState((s) => ({ message, key: s.key + 1 }));
   }, []);
 
-  const login = useCallback((selectedRole) => {
-    sessionStorage.setItem('role', selectedRole);
-    setRoleState(selectedRole);
-    setIsLoggedIn(true);
+  useEffect(() => {
+    const token = sessionStorage.getItem('accessToken');
+    if (!token) { setAuthLoading(false); return; }
+    api.get('/api/me')
+      .then((me) => setUser(me))
+      .catch(() => sessionStorage.removeItem('accessToken'))
+      .finally(() => setAuthLoading(false));
+  }, []);
+
+  const login = useCallback(async (employeeNo, password) => {
+    const data = await api.post('/api/auth/login', { employeeNo: Number(employeeNo), password });
+    sessionStorage.setItem('accessToken', data.accessToken);
+    setUser(data.user);
   }, []);
 
   const logout = useCallback(() => {
-    sessionStorage.removeItem('role');
-    sessionStorage.removeItem('lastPage');
-    setIsLoggedIn(false);
-  }, []);
-
-  const switchRole = useCallback((newRole) => {
-    sessionStorage.setItem('role', newRole);
-    setRoleState(newRole);
+    sessionStorage.removeItem('accessToken');
+    setUser(null);
   }, []);
 
   const addUserMessage = useCallback((taskId, text) => {
@@ -78,11 +77,11 @@ export function AppProvider({ children }) {
   }, []);
 
   const value = useMemo(() => ({
-    isLoggedIn, role, profile: ROLE_PROFILE[role],
-    login, logout, switchRole,
+    isLoggedIn: !!user, authLoading, user, role: user?.role, profile: user,
+    login, logout,
     tasks, addUserMessage, addAiReply, createTask,
     toast, toastState,
-  }), [isLoggedIn, role, tasks, toastState, login, logout, switchRole, addUserMessage, addAiReply, createTask, toast]);
+  }), [user, authLoading, tasks, toastState, login, logout, addUserMessage, addAiReply, createTask, toast]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

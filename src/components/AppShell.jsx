@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 const navClass = ({ isActive }) => `nav-item${isActive ? ' active' : ''}`;
 
 export default function AppShell() {
-  const { role, profile, switchRole, logout } = useApp();
+  const { role, profile, logout } = useApp();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const switchRef = useRef(null);
@@ -17,11 +17,6 @@ export default function AppShell() {
     document.addEventListener('click', handleOutsideClick);
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
-
-  function handleRoleSwitch(newRole) {
-    switchRole(newRole);
-    navigate(newRole === 'sales' ? '/tasks' : '/review');
-  }
 
   function handleLogout() {
     logout();
@@ -40,10 +35,10 @@ export default function AppShell() {
 
         <div className={`workspace-switch${menuOpen ? ' open' : ''}`} ref={switchRef} onClick={() => setMenuOpen((v) => !v)}>
           <div className="wmark"></div>
-          <div className="wtext"><b>영업1팀</b><span>34명 · 삼성SDS</span></div>
+          <div className="wtext"><b>{profile.teamName}</b><span>{profile.companyName}</span></div>
           <svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M8 9l4 4 4-4M8 15l4-4 4 4" /></svg>
           <div className="workspace-menu">
-            <div className="workspace-menu-item active">삼성SDS · 영업1팀 (현재)</div>
+            <div className="workspace-menu-item active">{profile.companyName} · {profile.teamName} (현재)</div>
             <div className="workspace-menu-item disabled">+ 다른 회사로 전환 (준비 중)</div>
           </div>
         </div>
@@ -59,7 +54,7 @@ export default function AppShell() {
             AI 업무 공간
           </NavLink>
 
-          {role === 'sales' && (
+          {role === 'member' && (
             <>
               <div className="nav-label">평가</div>
               <NavLink to="/report" className={navClass}>
@@ -69,7 +64,7 @@ export default function AppShell() {
             </>
           )}
 
-          {role === 'admin' && (
+          {role === 'team_lead' && (
             <>
               <div className="nav-label">평가</div>
               <NavLink to="/review" className={navClass}>
@@ -90,13 +85,9 @@ export default function AppShell() {
         </div>
 
         <div className="sidebar-foot">
-          <div className="role-switch">
-            <button className={`role-btn${role === 'sales' ? ' active' : ''}`} onClick={() => handleRoleSwitch('sales')}>영업 직원</button>
-            <button className={`role-btn${role === 'admin' ? ' active' : ''}`} onClick={() => handleRoleSwitch('admin')}>관리자</button>
-          </div>
           <div className="user-row">
-            <div className="avatar">{profile.avatar}</div>
-            <div style={{ flex: 1, minWidth: 0 }}><b>{profile.name}</b><span>{profile.roleLabel}</span></div>
+            <div className="avatar">{profile.avatarInitial}</div>
+            <div style={{ flex: 1, minWidth: 0 }}><b>{profile.name}</b><span>{profile.teamName} · {role === 'team_lead' ? '팀장' : '팀원'}</span></div>
             <button className="logout-btn" onClick={handleLogout} title="로그아웃">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>
             </button>

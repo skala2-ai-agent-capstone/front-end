@@ -7,7 +7,7 @@ export default function TaskDashboardPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
 
-  const isSales = role === 'sales';
+  const isSales = role === 'member';
 
   const visibleTasks = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -25,11 +25,11 @@ export default function TaskDashboardPage() {
             <span className="kbd">⌘K</span>
           </div>
           <button className="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg></button>
-          <div className="avatar" style={{ background: 'var(--gray-soft)', color: 'var(--text-muted)' }}>{profile.avatar}</div>
+          <div className="avatar" style={{ background: 'var(--gray-soft)', color: 'var(--text-muted)' }}>{profile.avatarInitial}</div>
         </div>
       </div>
       <div className="page-sub">
-        <p>{isSales ? '진행 중인 영업 업무와 자동 평가 상태를 확인하세요.' : '전체 업무 목록을 확인하세요. 관리자 업무는 평가·코칭 대상이 아닙니다.'}</p>
+        <p>{isSales ? '진행 중인 영업 업무와 자동 평가 상태를 확인하세요.' : '전체 업무 목록을 확인하세요. 팀장 업무는 평가·코칭 대상이 아닙니다.'}</p>
       </div>
 
       {isSales && (
