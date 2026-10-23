@@ -9,6 +9,7 @@ import WorkspacePage from './pages/WorkspacePage';
 import EvaluationReportPage from './pages/EvaluationReportPage';
 import ReviewListPage from './pages/ReviewListPage';
 import ReviewDetailPage from './pages/ReviewDetailPage';
+import TeamWorksPage from './pages/TeamWorksPage';
 import TeamDashboardPage from './pages/TeamDashboardPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 
@@ -37,6 +38,7 @@ function AppRoutes() {
         <Route path="/report" element={<EvaluationReportPage />} />
         <Route path="/review" element={<ReviewListPage />} />
         <Route path="/review/:reviewRequestId" element={<ReviewDetailPage />} />
+        <Route path="/team-works" element={<TeamWorksPage />} />
         <Route path="/dashboard" element={<TeamDashboardPage />} />
         <Route path="/settings" element={<AdminSettingsPage />} />
       </Route>

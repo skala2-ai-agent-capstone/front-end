@@ -82,9 +82,9 @@ export default function TaskDashboardPage() {
     let cancelled = false;
     async function load() {
       try {
+        const list = await api.get('/api/works?scope=mine');
+        if (!cancelled) setWorks(list);
         if (isSales) {
-          const list = await api.get('/api/works?scope=mine');
-          if (!cancelled) setWorks(list);
           const s = await api.get('/api/works/summary');
           if (!cancelled) setStats(s);
         } else {
@@ -114,7 +114,7 @@ export default function TaskDashboardPage() {
         </div>
       </div>
       <div className="page-sub">
-        <p>{isSales ? '진행 중인 영업 업무와 자동 평가 상태를 확인하세요.' : '지금 검토·확인이 필요한 평가 건을 확인하세요.'}</p>
+        <p>{isSales ? '진행 중인 영업 업무와 자동 평가 상태를 확인하세요.' : '내 업무와 지금 검토·확인이 필요한 평가 건을 확인하세요.'}</p>
       </div>
 
       {error && <p className="task-sub" style={{ color: 'var(--red)' }}>{error}</p>}
@@ -192,27 +192,25 @@ export default function TaskDashboardPage() {
         </>
       )}
 
-      {isSales && (
-        <div className="card" style={{ padding: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <b style={{ fontSize: 15 }}>최근 업무</b>
-            <button className="btn-link" onClick={() => navigate('/workspace')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
-              전체 업무 →
-            </button>
-          </div>
-          <div className="recent-row">
-            {recentWorks.map((w) => (
-              <button key={w.workId} className="ws-card" onClick={() => navigate(`/workspace/${w.workId}`)}>
-                <div className="ws-card-top"><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span><span className="mono">{new Date(w.updatedAt).toLocaleDateString()}</span></div>
-                <div className="ws-card-title">{w.title}</div>
-                <div className="ws-card-type">{w.workTypeLabel || '유형 미정'}</div>
-              </button>
-            ))}
-          </div>
-          {works && recentWorks.length === 0 && <p className="task-sub">업무가 없어요.</p>}
-          {!works && !error && <p className="task-sub">불러오는 중…</p>}
+      <div className="card" style={{ padding: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <b style={{ fontSize: 15 }}>최근 업무</b>
+          <button className="btn-link" onClick={() => navigate('/workspace')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+            전체 업무 →
+          </button>
         </div>
-      )}
+        <div className="recent-row">
+          {recentWorks.map((w) => (
+            <button key={w.workId} className="ws-card" onClick={() => navigate(`/workspace/${w.workId}`)}>
+              <div className="ws-card-top"><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span><span className="mono">{new Date(w.updatedAt).toLocaleDateString()}</span></div>
+              <div className="ws-card-title">{w.title}</div>
+              <div className="ws-card-type">{w.workTypeLabel || '유형 미정'}</div>
+            </button>
+          ))}
+        </div>
+        {works && recentWorks.length === 0 && <p className="task-sub">업무가 없어요.</p>}
+        {!works && !error && <p className="task-sub">불러오는 중…</p>}
+      </div>
     </section>
   );
 }
