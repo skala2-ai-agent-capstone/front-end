@@ -261,13 +261,13 @@
   .chip{font-size:13px; padding:6px 13px; border-radius:999px; border:1px solid var(--border-strong); color:var(--text-muted); background:var(--card); font-weight:600;}
   .chip.on{background:var(--primary-subdued); border-color:var(--primary); color:var(--primary-dark);}
 
-  /* outlined pill badge (ref: Payroll list status) */
-  .badge{font-size:12px; font-weight:700; padding:4px 11px; border-radius:999px; border:1px solid var(--border-strong); color:var(--text-muted); background:transparent; display:inline-flex; align-items:center;}
-  .badge-green{color:var(--green-dark); border-color:#BFE7D2;}
-  .badge-amber{color:var(--amber); border-color:#F3DBA8;}
-  .badge-blue{color:var(--blue); border-color:#C9DBFB;}
-  .badge-red{color:var(--red); border-color:#F6C9C5;}
-  .badge-gray{color:var(--text-muted); border-color:var(--border-strong);}
+  /* filled pill badge */
+  .badge{font-size:12px; font-weight:700; padding:4px 11px; border-radius:999px; border:none; color:var(--text-muted); background:var(--gray-soft); display:inline-flex; align-items:center;}
+  .badge-green{color:#0E9D56; background:var(--green-soft);}
+  .badge-amber{color:#D97706; background:var(--amber-soft);}
+  .badge-blue{color:#2F6FE4; background:var(--blue-soft);}
+  .badge-red{color:#E0352B; background:var(--red-soft);}
+  .badge-gray{color:var(--text-muted); background:var(--gray-soft);}
 
   .stat-delta{display:inline-flex; align-items:center; gap:4px; font-size:13px; font-weight:700;}
   .stat-delta svg{width:11px; height:11px;}
@@ -500,7 +500,7 @@
   .tab-count{margin-left:7px; font-size:10.5px; font-weight:700; padding:1px 7px; border-radius:999px; background:var(--amber-soft); color:var(--amber);}
   .btn:disabled{opacity:.45; cursor:default;}
   .chip-xs{font-size:11px; padding:2px 8px;}
-  .badge-ai{color:var(--primary-dark); border-color:var(--primary-line);}
+  .badge-ai{color:var(--primary-dark); background:var(--primary-wash);}
 
   .upload-grid{display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:16px; align-items:start;}
   #tab-b td.mono, #tab-b td .badge{white-space:nowrap;}
