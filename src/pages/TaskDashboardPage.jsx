@@ -71,7 +71,6 @@ function ScoreColumn({ value, color, valueColor }) {
 export default function TaskDashboardPage() {
   const { role, profile } = useApp();
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
   const [works, setWorks] = useState(null);
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
@@ -99,26 +98,14 @@ export default function TaskDashboardPage() {
   const visibleWorks = useMemo(() => {
     if (!works) return [];
     if (isSales) return [...works].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 3);
-    const q = search.trim().toLowerCase();
-    return works.filter((w) => !q || w.title.toLowerCase().includes(q));
-  }, [works, search, isSales]);
-
-  function handleSearchKeyDown(e) {
-    if (e.key === 'Enter' && isSales) {
-      navigate(search.trim() ? `/workspace?q=${encodeURIComponent(search.trim())}` : '/workspace');
-    }
-  }
+    return works;
+  }, [works, isSales]);
 
   return (
     <section className="page active task-dashboard-page">
       <div className="topheader">
         <h1>업무 현황</h1>
         <div className="header-right">
-          <div className="search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
-            <input type="text" placeholder={isSales ? '업무 검색 (Enter로 AI 업무 공간 검색)' : '업무 검색...'} value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleSearchKeyDown} />
-            <span className="kbd">⌘K</span>
-          </div>
           <button className="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg></button>
           <div className="avatar" style={{ background: 'var(--gray-soft)', color: 'var(--text-muted)' }}>{profile.avatarInitial}</div>
         </div>
@@ -178,7 +165,7 @@ export default function TaskDashboardPage() {
             </button>
           ))}
         </div>
-        {works && visibleWorks.length === 0 && <p className="task-sub">{isSales ? '업무가 없어요.' : '검색 결과가 없어요.'}</p>}
+        {works && visibleWorks.length === 0 && <p className="task-sub">업무가 없어요.</p>}
         {!works && !error && <p className="task-sub">불러오는 중…</p>}
       </div>
     </section>
