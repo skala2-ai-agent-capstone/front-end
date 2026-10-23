@@ -67,7 +67,8 @@ export function AppProvider({ children }) {
       [id]: {
         title: title || meta.type, type: meta.type, typeKey, status: '작성 중', statusClass: 'badge-gray', updated: '방금 전',
         purpose: purpose ? escapeHtml(purpose).replace(/\n/g, '<br/>') : '등록된 목적·요구사항이 없습니다',
-        refs: fileNames,
+        customerRefs: fileNames,
+        internalRefs: [],
         artifactTitle: meta.artifactTitle, artifactVersion: '초안 작성 전',
         artifactBody: '<p class="task-sub">AI와 대화를 시작하면 여기에 산출물이 쌓여요.</p>',
         messages: [],

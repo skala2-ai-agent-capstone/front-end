@@ -59,7 +59,8 @@ export default function NewTaskModal({ onClose }) {
             <textarea rows={3} value={purpose} onChange={(e) => setPurpose(e.target.value)} placeholder="업무 목적, 예산, 필수 요구사항 등을 입력하세요" />
           </div>
           <div className="field">
-            <label>참조 자료</label>
+            <label>고객 자료</label>
+            <p className="task-sub" style={{ margin: '-6px 0 8px' }}>RFP 원문, 정정 공고, 회의록 등 고객이 보낸 자료를 올려주세요. 사내 자료는 AI가 자동으로 참고해요.</p>
             <div
               className={`card dropzone${dragging ? ' drag' : ''}`}
               style={{ padding: 18 }}

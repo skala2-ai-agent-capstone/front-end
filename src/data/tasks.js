@@ -19,7 +19,8 @@ export const INITIAL_TASKS = {
   rfp: {
     title: '삼성SDS향 RFP 분석', type: 'RFP 요구사항 분석', typeKey: 'rfp', status: '작성 중', statusClass: 'badge-gray', updated: '10분 전',
     purpose: '목적: SI 제안 사전 분석<br/>예산: 비공개 · 필수 요구 12건',
-    refs: ['RFP_원문_v2.pdf', '제품_서비스_제공범위.pdf'],
+    customerRefs: ['RFP_원문_v2.pdf'],
+    internalRefs: ['제품_서비스_제공범위.pdf'],
     artifactTitle: '요구사항 대응표', artifactVersion: '초안 v3',
     artifactBody: '<p><b>1. 보안</b><br/>ISMS-P 인증 보유 — 충족<br/>전송구간 암호화 — 충족 (TLS 1.3)</p><p><b>2. 배포</b><br/>자체 데이터센터 배포 옵션 — 충족</p>',
     messages: [
@@ -32,7 +33,8 @@ export const INITIAL_TASKS = {
   proposal: {
     title: 'LG CNS 맞춤 제안서', type: '고객 맞춤 제안서 작성', typeKey: 'proposal', status: '평가 중', statusClass: 'badge-amber', updated: '1시간 전',
     purpose: '목적: 챗봇 플랫폼 고도화 제안<br/>예산: 3억 내외 · 필수 요구 8건',
-    refs: ['고객_요구사항_정리.docx', '표준_제안서_템플릿.pptx', '확정_견적_LGCNS.pdf'],
+    customerRefs: ['고객_요구사항_정리.docx'],
+    internalRefs: ['표준_제안서_템플릿.pptx', '확정_견적_LGCNS.pdf'],
     artifactTitle: '최종 제안서', artifactVersion: '최종본',
     artifactBody: '<p><b>1. 제안 개요</b><br/>AI 상담 자동화로 응대시간 40% 단축</p><p><b>2. 가격</b><br/>확정 견적 기준 3.2억 (VAT 별도)</p>',
     messages: [
@@ -43,7 +45,8 @@ export const INITIAL_TASKS = {
   quote: {
     title: '현대오토에버 견적서', type: '견적서 작성', typeKey: 'quote', status: '확인 대기', statusClass: 'badge-blue', updated: '어제',
     purpose: '목적: 라이선스 갱신 견적<br/>예산: 1.5억 · 사용자 120명',
-    refs: ['2026_가격정책_표준.xlsx', '할인_승인_기준.pdf'],
+    customerRefs: [],
+    internalRefs: ['2026_가격정책_표준.xlsx', '할인_승인_기준.pdf'],
     artifactTitle: '견적서', artifactVersion: '승인 요청됨',
     artifactBody: '<p><b>상품</b><br/>Doc AI 120 사용자 · 12개월</p><p><b>금액</b><br/>단가 25,000원 × 120명 × 12개월 = 36,000,000원 (VAT 별도)</p>',
     messages: [
@@ -54,7 +57,8 @@ export const INITIAL_TASKS = {
   reply: {
     title: 'SK C&C 질의 응답', type: '고객 질의 답변 작성', typeKey: 'reply', status: '확정', statusClass: 'badge-green', updated: '2일 전',
     purpose: '목적: 기술 문의 회신<br/>관련 업무: 견적서 QUOTE-1172',
-    refs: ['제품_서비스_제공범위_v4.pdf', '확정_견적_SKC&C.pdf'],
+    customerRefs: [],
+    internalRefs: ['제품_서비스_제공범위_v4.pdf', '확정_견적_SKC&C.pdf'],
     artifactTitle: '회신 메일', artifactVersion: '발송 완료',
     artifactBody: '<p>문의하신 SSO 연동은 SAML 2.0 기반으로 지원되며, OIDC는 현재 지원하지 않습니다.</p><p>가격 문의는 보내드린 확정 견적(QUOTE-1172) 범위 내에서 답변드립니다.</p>',
     messages: [

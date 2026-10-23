@@ -104,14 +104,28 @@ function WorkspaceView({ taskId, task }) {
             <div className="ws-readonly" dangerouslySetInnerHTML={{ __html: task.purpose }} />
           </div>
           <div className="card ws-panel">
-            <h3>참조 자료</h3>
+            <h3>고객 자료</h3>
             <div>
-              {task.refs.map((r, i) => (
+              {task.customerRefs.map((r, i) => (
                 <div className="ref-item" key={i}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
                   {r}
                 </div>
               ))}
+              {task.customerRefs.length === 0 && <p className="task-sub">등록된 고객 자료가 없어요.</p>}
+            </div>
+          </div>
+          <div className="card ws-panel">
+            <h3>사내 참고 자료</h3>
+            <p className="task-sub" style={{ marginBottom: 8 }}>AI가 답변을 만들 때 자동으로 참고하는 자료예요.</p>
+            <div>
+              {task.internalRefs.map((r, i) => (
+                <div className="ref-item" key={i}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
+                  {r}
+                </div>
+              ))}
+              {task.internalRefs.length === 0 && <p className="task-sub">아직 참고한 사내 자료가 없어요.</p>}
             </div>
           </div>
           <div className="card ws-panel">
