@@ -74,7 +74,7 @@ export default function WorkspaceListPage() {
           </thead>
           <tbody>
             {rows.map((w) => (
-              <tr key={w.workId}>
+              <tr key={w.workId} className="row-link" onClick={() => navigate(`/workspace/${w.workId}`)}>
                 <td>
                   <div className="task-name-cell">
                     <div className="avatar" style={{ background: 'var(--gray-soft)', color: 'var(--text-muted)' }}>{initialOf(w)}</div>
@@ -85,9 +85,7 @@ export default function WorkspaceListPage() {
                 <td><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span></td>
                 <td className="mono">{new Date(w.updatedAt).toLocaleString()}</td>
                 <td style={{ textAlign: 'right' }}>
-                  <button className="btn-open" onClick={() => navigate(`/workspace/${w.workId}`)}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>열기
-                  </button>
+                  <svg className="row-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>
                 </td>
               </tr>
             ))}

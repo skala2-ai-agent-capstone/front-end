@@ -336,6 +336,9 @@
   thead th svg{width:13px; height:13px;}
   tbody td{padding:13px 20px; border-top:1px solid var(--border); font-size:14.5px;}
   tbody tr:hover td{background:#FAFAFC;}
+  tbody tr.row-link{cursor:pointer;}
+  .row-link-arrow{width:16px; height:16px; color:var(--text-faint);}
+  tbody tr.row-link:hover .row-link-arrow{color:var(--primary);}
   .task-name-cell{display:flex; align-items:center; gap:10px;}
   .task-name{font-weight:700;}
   .task-sub{color:var(--text-faint); font-size:12px; margin-top:1px;}
