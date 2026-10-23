@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import logo from '../assets/aworko-logo.png';
 
 const navClass = ({ isActive }) => `nav-item${isActive ? ' active' : ''}`;
 
@@ -27,10 +28,7 @@ export default function AppShell() {
     <div className="app-shell" id="appShell">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" stroke="white" strokeWidth="1.8" strokeLinejoin="round" /></svg>
-          </div>
-          <span className="brand-name">세일즈 AI 코치</span>
+          <img src={logo} alt="Aworko" style={{ height: 24, width: 'auto' }} />
         </div>
 
         <div className={`workspace-switch${menuOpen ? ' open' : ''}`} ref={switchRef} onClick={() => setMenuOpen((v) => !v)}>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import logo from '../assets/aworko-logo.png';
 
 export default function LoginPage() {
   const { isLoggedIn, authLoading, role } = useApp();
@@ -15,9 +16,8 @@ export default function LoginPage() {
       <div className="auth-split">
         <div className="auth-left">
           <div className="auth-left-inner">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 28 }}>
-              <div className="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" stroke="white" strokeWidth="1.8" strokeLinejoin="round" /></svg></div>
-              <span style={{ fontWeight: 700, fontSize: 16 }}>세일즈 AI 코치</span>
+            <div style={{ marginBottom: 28 }}>
+              <img src={logo} alt="Aworko" style={{ height: 28, width: 'auto' }} />
             </div>
 
             <div className="auth-tabs">
@@ -35,8 +35,7 @@ export default function LoginPage() {
           <div className="auth-blob b3"></div>
 
           <div className="auth-right-logo">
-            <div className="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" stroke="white" strokeWidth="1.8" strokeLinejoin="round" /></svg></div>
-            <span>세일즈 AI 코치</span>
+            <img src={logo} alt="Aworko" style={{ height: 32, width: 'auto' }} />
           </div>
 
           <div className="auth-right-body">
