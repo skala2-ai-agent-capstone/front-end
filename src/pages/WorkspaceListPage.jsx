@@ -52,20 +52,16 @@ export default function WorkspaceListPage() {
           </button>
         </div>
       </div>
-      <div className="page-sub"><p>작업할 업무를 선택하세요. AI와 대화하며 산출물을 작성합니다.</p></div>
+      <div className="ws-tabs">
+        <button className={`ws-tab${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>전체</button>
+        {workTypes.map((t) => (
+          <button key={t.workType} className={`ws-tab${filter === t.workType ? ' active' : ''}`} onClick={() => setFilter(t.workType)}>{t.label}</button>
+        ))}
+      </div>
 
       {error && <p className="task-sub" style={{ color: 'var(--red)' }}>{error}</p>}
 
       <div className="card">
-        <div className="tbl-head">
-          <b style={{ fontSize: 15 }}>전체 업무</b>
-          <div className="filters">
-            <span className={`chip${filter === 'all' ? ' on' : ''}`} onClick={() => setFilter('all')}>전체</span>
-            {workTypes.map((t) => (
-              <span key={t.workType} className={`chip${filter === t.workType ? ' on' : ''}`} onClick={() => setFilter(t.workType)}>{t.label}</span>
-            ))}
-          </div>
-        </div>
         <table>
           <thead>
             <tr>

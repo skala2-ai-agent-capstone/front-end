@@ -366,6 +366,12 @@
 
   .filters{display:flex; gap:8px; flex-wrap:wrap;}
 
+  /* AI 업무 공간 — 업무 유형 탭 (밑줄 스타일) */
+  .ws-tabs{display:flex; gap:28px; border-bottom:1px solid var(--border); margin-bottom:20px; flex-wrap:wrap;}
+  .ws-tab{background:none; border:none; padding:0 2px 14px; margin-bottom:-1px; font-size:15px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer;}
+  .ws-tab:hover{color:var(--text);}
+  .ws-tab.active{color:var(--primary); border-bottom-color:var(--primary);}
+
   /* AI workspace (ChatGPT/Claude style) */
   .task-dropdown{position:relative; display:inline-block;}
   .task-dropdown-btn{display:flex; align-items:center; gap:8px; border:none; background:none; padding:0;}
