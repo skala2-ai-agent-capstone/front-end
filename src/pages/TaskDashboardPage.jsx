@@ -73,6 +73,7 @@ export default function TaskDashboardPage() {
   const navigate = useNavigate();
   const [works, setWorks] = useState(null);
   const [stats, setStats] = useState(null);
+  const [reviews, setReviews] = useState(null);
   const [error, setError] = useState('');
 
   const isSales = role === 'member';
@@ -81,11 +82,14 @@ export default function TaskDashboardPage() {
     let cancelled = false;
     async function load() {
       try {
-        const list = await api.get(`/api/works?scope=${isSales ? 'mine' : 'team'}`);
-        if (!cancelled) setWorks(list);
         if (isSales) {
+          const list = await api.get('/api/works?scope=mine');
+          if (!cancelled) setWorks(list);
           const s = await api.get('/api/works/summary');
           if (!cancelled) setStats(s);
+        } else {
+          const r = await api.get('/api/reviews');
+          if (!cancelled) setReviews(r);
         }
       } catch (err) {
         if (!cancelled) setError(err.message);
@@ -95,11 +99,10 @@ export default function TaskDashboardPage() {
     return () => { cancelled = true; };
   }, [isSales]);
 
-  const visibleWorks = useMemo(() => {
+  const recentWorks = useMemo(() => {
     if (!works) return [];
-    if (isSales) return [...works].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 3);
-    return works;
-  }, [works, isSales]);
+    return [...works].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 3);
+  }, [works]);
 
   return (
     <section className="page active task-dashboard-page">
@@ -111,10 +114,52 @@ export default function TaskDashboardPage() {
         </div>
       </div>
       <div className="page-sub">
-        <p>{isSales ? '진행 중인 영업 업무와 자동 평가 상태를 확인하세요.' : '전체 업무 목록을 확인하세요. 팀장 업무는 평가·코칭 대상이 아닙니다.'}</p>
+        <p>{isSales ? '진행 중인 영업 업무와 자동 평가 상태를 확인하세요.' : '지금 검토·확인이 필요한 평가 건을 확인하세요.'}</p>
       </div>
 
       {error && <p className="task-sub" style={{ color: 'var(--red)' }}>{error}</p>}
+
+      {!isSales && (
+        <>
+          <div className="stat-row">
+            <div className="card stat-card"><div className="stat-label">검토 대기</div><div className="stat-val">{reviews ? reviews.length : '-'}</div></div>
+          </div>
+
+          <div className="card">
+            <div className="tbl-head">
+              <b style={{ fontSize: 15 }}>평가 검토가 필요한 업무</b>
+              {reviews && reviews.length > 0 && (
+                <button className="btn-link" onClick={() => navigate('/review')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+                  전체 보기 →
+                </button>
+              )}
+            </div>
+            {reviews && reviews.length > 0 && (
+              <table>
+                <thead>
+                  <tr><th>업무</th><th>유형</th><th>사유</th><th>상태</th><th>접수</th><th></th></tr>
+                </thead>
+                <tbody>
+                  {reviews.map((r) => (
+                    <tr key={r.reviewRequestId} className="row-link" onClick={() => navigate(`/review/${r.reviewRequestId}`)}>
+                      <td><div className="task-name">{r.taskTitle || r.taskId}</div><div className="task-sub">{r.employeeId}</div></td>
+                      <td>{r.workType || '-'}</td>
+                      <td>{r.reason}</td>
+                      <td><span className="badge badge-red">{r.displayStatus}</span></td>
+                      <td className="mono">{new Date(r.submittedAt).toLocaleString()}</td>
+                      <td style={{ textAlign: 'right' }}>
+                        <svg className="row-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            {reviews && reviews.length === 0 && <p className="task-sub" style={{ padding: '0 20px 20px' }}>지금 검토가 필요한 업무가 없어요.</p>}
+            {!reviews && !error && <p className="task-sub" style={{ padding: '0 20px 20px' }}>불러오는 중…</p>}
+          </div>
+        </>
+      )}
 
       {isSales && stats && (
         <>
@@ -147,27 +192,27 @@ export default function TaskDashboardPage() {
         </>
       )}
 
-      <div className="card" style={{ padding: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <b style={{ fontSize: 15 }}>{isSales ? '최근 업무' : '전체 업무'}</b>
-          {isSales && (
+      {isSales && (
+        <div className="card" style={{ padding: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <b style={{ fontSize: 15 }}>최근 업무</b>
             <button className="btn-link" onClick={() => navigate('/workspace')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
               전체 업무 →
             </button>
-          )}
+          </div>
+          <div className="recent-row">
+            {recentWorks.map((w) => (
+              <button key={w.workId} className="ws-card" onClick={() => navigate(`/workspace/${w.workId}`)}>
+                <div className="ws-card-top"><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span><span className="mono">{new Date(w.updatedAt).toLocaleDateString()}</span></div>
+                <div className="ws-card-title">{w.title}</div>
+                <div className="ws-card-type">{w.workTypeLabel || '유형 미정'}</div>
+              </button>
+            ))}
+          </div>
+          {works && recentWorks.length === 0 && <p className="task-sub">업무가 없어요.</p>}
+          {!works && !error && <p className="task-sub">불러오는 중…</p>}
         </div>
-        <div className="recent-row">
-          {visibleWorks.map((w) => (
-            <button key={w.workId} className="ws-card" onClick={() => navigate(`/workspace/${w.workId}`)}>
-              <div className="ws-card-top"><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span><span className="mono">{new Date(w.updatedAt).toLocaleDateString()}</span></div>
-              <div className="ws-card-title">{w.title}</div>
-              <div className="ws-card-type">{w.workTypeLabel || '유형 미정'}{!isSales && w.employeeName ? ` · ${w.employeeName}` : ''}</div>
-            </button>
-          ))}
-        </div>
-        {works && visibleWorks.length === 0 && <p className="task-sub">업무가 없어요.</p>}
-        {!works && !error && <p className="task-sub">불러오는 중…</p>}
-      </div>
+      )}
     </section>
   );
 }

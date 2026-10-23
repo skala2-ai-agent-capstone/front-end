@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
 import { stageBadgeClass } from '../utils/stage';
 import NewTaskModal from '../components/NewTaskModal';
 
 export default function WorkspaceListPage() {
   const navigate = useNavigate();
+  const { role } = useApp();
   const [searchParams] = useSearchParams();
   const [works, setWorks] = useState(null);
   const [workTypes, setWorkTypes] = useState([]);
@@ -14,11 +16,14 @@ export default function WorkspaceListPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState('');
 
+  const isTeamLead = role === 'team_lead';
+  const scope = isTeamLead ? 'team' : 'mine';
+
   const load = useCallback(() => {
-    Promise.all([api.get('/api/works?scope=mine'), api.get('/api/work-types')])
+    Promise.all([api.get(`/api/works?scope=${scope}`), api.get('/api/work-types')])
       .then(([w, types]) => { setWorks(w); setWorkTypes(types); })
       .catch((err) => setError(err.message));
-  }, []);
+  }, [scope]);
 
   useEffect(load, [load]);
 
@@ -67,6 +72,7 @@ export default function WorkspaceListPage() {
             <tr>
               <th><span className="th-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>업무</span></th>
               <th>업무 유형</th>
+              {isTeamLead && <th>담당자</th>}
               <th>상태</th>
               <th><span className="th-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>최종 수정</span></th>
               <th></th>
@@ -82,6 +88,7 @@ export default function WorkspaceListPage() {
                   </div>
                 </td>
                 <td>{w.workTypeLabel || '유형 미정'}</td>
+                {isTeamLead && <td>{w.employeeName || '-'}</td>}
                 <td><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span></td>
                 <td className="mono">{new Date(w.updatedAt).toLocaleString()}</td>
                 <td style={{ textAlign: 'right' }}>
