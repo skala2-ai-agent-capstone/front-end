@@ -37,8 +37,10 @@ export default function TaskDashboardPage() {
   const visibleWorks = useMemo(() => {
     if (!works) return [];
     const q = search.trim().toLowerCase();
-    return works.filter((w) => !q || w.title.toLowerCase().includes(q));
-  }, [works, search]);
+    const filtered = works.filter((w) => !q || w.title.toLowerCase().includes(q));
+    if (!isSales) return filtered;
+    return [...filtered].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 3);
+  }, [works, search, isSales]);
 
   return (
     <section className="page active">
@@ -97,7 +99,14 @@ export default function TaskDashboardPage() {
       )}
 
       <div className="card" style={{ padding: 20 }}>
-        <b style={{ fontSize: 15, display: 'block', marginBottom: 14 }}>{isSales ? '최근 업무' : '전체 업무'}</b>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <b style={{ fontSize: 15 }}>{isSales ? '최근 업무' : '전체 업무'}</b>
+          {isSales && (
+            <button className="btn-link" onClick={() => navigate('/workspace')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+              전체 업무 →
+            </button>
+          )}
+        </div>
         <div className="recent-row">
           {visibleWorks.map((w) => (
             <button key={w.workId} className="ws-card" onClick={() => navigate(`/workspace/${w.workId}`)}>
