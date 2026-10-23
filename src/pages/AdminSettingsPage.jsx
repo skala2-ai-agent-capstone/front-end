@@ -25,21 +25,10 @@ export default function AdminSettingsPage() {
   const rerender = () => bump();
   const s = stateRef.current;
 
-  const [tab, setTab] = useState('tab-a');
+  const [tab, setTab] = useState('tab-b');
   const [docType, setDocType] = useState('auto');
   const dropInputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
-
-  // --- 사용자·권한 ---
-  const [maskingOn, setMaskingOn] = useState(true);
-
-  function toggleMasking() {
-    setMaskingOn((v) => {
-      const next = !v;
-      toast(next ? '민감정보 마스킹을 켰어요.' : '민감정보 마스킹을 껐어요.');
-      return next;
-    });
-  }
 
   // --- 문서 업로드 · 에이전트 시뮬레이션 ---
   function runStep() {
@@ -233,13 +222,9 @@ export default function AdminSettingsPage() {
   return (
     <section className="page active">
       <div className="topheader"><h1>운영 설정</h1></div>
-      <div className="page-sub"><p>사용자 권한, 제품·가격 자료, 평가 기준을 관리합니다.</p></div>
+      <div className="page-sub"><p>제품·가격 자료, 평가 기준을 관리합니다.</p></div>
 
       <div className="utabs">
-        <button className={`utab${tab === 'tab-a' ? ' active' : ''}`} onClick={() => setTab('tab-a')}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" /></svg>
-          사용자·권한
-        </button>
         <button className={`utab${tab === 'tab-b' ? ' active' : ''}`} onClick={() => setTab('tab-b')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
           제품·가격·정책 자료
@@ -250,27 +235,6 @@ export default function AdminSettingsPage() {
           {s.draft && <span className="tab-count">{s.draft.id} 초안</span>}
         </button>
       </div>
-
-      {tab === 'tab-a' && (
-        <div className="settings-panel active">
-          <div className="card">
-            <div className="form-row"><label>접근 범위</label>
-              <select style={{ padding: '9px 12px', border: '1px solid var(--border-strong)', borderRadius: 8, width: 260 }}
-                onChange={(e) => toast(`접근 범위가 "${e.target.value}"로 변경됐어요.`)}>
-                <option>영업1팀 전체</option>
-                <option>본인 업무만</option>
-              </select>
-            </div>
-            <div className="form-row"><label>민감정보 마스킹</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span className={`toggle${maskingOn ? '' : ' off'}`} role="switch" aria-checked={maskingOn} tabIndex={0}
-                  onClick={toggleMasking} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMasking(); } }} />
-                <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>{maskingOn ? '사전 정의 규칙 적용 중' : '마스킹 해제됨'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {tab === 'tab-b' && (
         <div className="settings-panel active">
