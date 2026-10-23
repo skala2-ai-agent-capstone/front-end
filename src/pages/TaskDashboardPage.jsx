@@ -5,6 +5,56 @@ import { api } from '../api/client';
 import { stageBadgeClass } from '../utils/stage';
 
 const STAGE_ORDER = ['작성 중', '평가 대기', '평가 중', '확인 대기', '검토 중', '확정', '자료 보류', '평가 실패'];
+const SCORE_MAX = 10;
+const SCORE_TICKS = [0, 5, 10];
+
+function ScoreBarChart({ byType }) {
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: 'var(--text-muted)' }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--primary)', display: 'inline-block' }} />이번 주
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: 'var(--text-muted)' }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--border-strong)', display: 'inline-block' }} />지난주
+        </span>
+      </div>
+
+      {byType.map((t) => (
+        <div key={t.workType} style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 7 }}>
+            {t.label} <span className="task-sub" style={{ fontWeight: 400 }}>· {t.works}건</span>
+          </div>
+          <ScoreBarRow value={t.thisWeek} color="var(--primary)" />
+          <ScoreBarRow value={t.lastWeek} color="var(--border-strong)" valueColor="var(--text-muted)" />
+        </div>
+      ))}
+
+      <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', paddingTop: 4, borderTop: '1px solid var(--border)' }}>
+          {SCORE_TICKS.map((v) => <span key={v} style={{ fontSize: 11, color: 'var(--text-faint)' }}>{v}</span>)}
+        </div>
+        <span style={{ width: 34 }} />
+      </div>
+    </div>
+  );
+}
+
+function ScoreBarRow({ value, color, valueColor }) {
+  const pct = value != null ? Math.min(100, (value / SCORE_MAX) * 100) : 0;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
+      <div style={{ flex: 1, height: 10, borderRadius: 4, background: 'var(--gray-soft)', overflow: 'hidden' }}>
+        {value != null && (
+          <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '0 4px 4px 0' }} />
+        )}
+      </div>
+      <span className="mono" style={{ width: 34, textAlign: 'right', fontSize: 12.5, color: valueColor || 'var(--text)', fontWeight: valueColor ? 400 : 700 }}>
+        {value != null ? value.toFixed(1) : '-'}
+      </span>
+    </div>
+  );
+}
 
 export default function TaskDashboardPage() {
   const { role, profile } = useApp();
@@ -81,12 +131,7 @@ export default function TaskDashboardPage() {
           <div className="widget-row">
             <div className="card widget">
               <div className="widget-head"><div className="widget-title"><div className="widget-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 19V10M12 19V5M20 19v-7" /></svg></div>업무 유형별 평균 점수 (10점 만점)</div></div>
-              {stats.byType.map((t) => (
-                <div className="list-row" key={t.workType}>
-                  <span className="l">{t.label} <span className="task-sub">· {t.works}건</span></span>
-                  <span className="r">{t.thisWeek != null ? `${t.thisWeek.toFixed(1)}점` : '-'}{t.lastWeek != null && <span className="task-sub"> (지난주 {t.lastWeek.toFixed(1)}점)</span>}</span>
-                </div>
-              ))}
+              <ScoreBarChart byType={stats.byType} />
             </div>
             <div className="card widget">
               <div className="widget-head"><div className="widget-title"><div className="widget-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9" /></svg></div>업무 상태</div></div>
