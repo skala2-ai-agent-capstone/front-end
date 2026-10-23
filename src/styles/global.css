@@ -406,6 +406,15 @@
   .ws-card-title{font-size:18px; font-weight:700;}
   .ws-card-type{font-size:15px; color:var(--text-muted);}
 
+  /* 업무 현황 카드 — 폰트 전체 +2px */
+  .task-dashboard-page .info-banner{font-size:18px;}
+  .task-dashboard-page .stat-label{font-size:15.5px;}
+  .task-dashboard-page .stat-val{font-size:calc(var(--fs-stat) + 2px);}
+  .task-dashboard-page .widget-title{font-size:calc(var(--fs-h3) + 2px);}
+  .task-dashboard-page .list-row{font-size:16.5px;}
+  .task-dashboard-page .recent-row .badge{font-size:14px;}
+  .task-dashboard-page .recent-row .mono{font-size:14.5px;}
+
   .btn-back{
     width:34px; height:34px; border-radius:10px; border:1px solid var(--border-strong); background:var(--card);
     color:var(--text); display:flex; align-items:center; justify-content:center; flex:none;

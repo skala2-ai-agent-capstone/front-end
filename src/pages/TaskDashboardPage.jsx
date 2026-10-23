@@ -43,7 +43,7 @@ export default function TaskDashboardPage() {
   }, [works, search, isSales]);
 
   return (
-    <section className="page active">
+    <section className="page active task-dashboard-page">
       <div className="topheader">
         <h1>업무 현황</h1>
         <div className="header-right">
