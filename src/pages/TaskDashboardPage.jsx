@@ -6,12 +6,14 @@ import { stageBadgeClass } from '../utils/stage';
 
 const STAGE_ORDER = ['작성 중', '평가 대기', '평가 중', '확인 대기', '검토 중', '확정', '자료 보류', '평가 실패'];
 const SCORE_MAX = 10;
-const SCORE_TICKS = [0, 5, 10];
+const SCORE_TICKS = [10, 5, 0];
+const CHART_H = 170;
+const BAR_W = 28;
 
 function ScoreBarChart({ byType }) {
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: 'var(--text-muted)' }}>
           <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--primary)', display: 'inline-block' }} />이번 주
         </span>
@@ -20,38 +22,48 @@ function ScoreBarChart({ byType }) {
         </span>
       </div>
 
-      {byType.map((t) => (
-        <div key={t.workType} style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 7 }}>
-            {t.label} <span className="task-sub" style={{ fontWeight: 400 }}>· {t.works}건</span>
-          </div>
-          <ScoreBarRow value={t.thisWeek} color="var(--primary)" />
-          <ScoreBarRow value={t.lastWeek} color="var(--border-strong)" valueColor="var(--text-muted)" />
+      <div style={{ display: 'flex' }}>
+        <div style={{ position: 'relative', width: 20, height: CHART_H, marginRight: 6, flex: 'none' }}>
+          {SCORE_TICKS.map((v) => (
+            <span key={v} style={{ position: 'absolute', right: 0, top: `${(SCORE_MAX - v) / SCORE_MAX * 100}%`, transform: 'translateY(-50%)', fontSize: 11, color: 'var(--text-faint)' }}>{v}</span>
+          ))}
         </div>
-      ))}
 
-      <div style={{ display: 'flex', gap: 10 }}>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', paddingTop: 4, borderTop: '1px solid var(--border)' }}>
-          {SCORE_TICKS.map((v) => <span key={v} style={{ fontSize: 11, color: 'var(--text-faint)' }}>{v}</span>)}
+        <div style={{ position: 'relative', flex: 1, height: CHART_H, borderLeft: '1px solid var(--border)' }}>
+          {SCORE_TICKS.map((v) => (
+            <div key={v} style={{ position: 'absolute', left: 0, right: 0, top: `${(SCORE_MAX - v) / SCORE_MAX * 100}%`, borderTop: '1px solid var(--border)' }} />
+          ))}
+          <div style={{ position: 'absolute', inset: 0, display: 'flex' }}>
+            {byType.map((t) => (
+              <div key={t.workType} style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 4 }}>
+                <ScoreColumn value={t.thisWeek} color="var(--primary)" />
+                <ScoreColumn value={t.lastWeek} color="var(--border-strong)" valueColor="var(--text-muted)" />
+              </div>
+            ))}
+          </div>
         </div>
-        <span style={{ width: 34 }} />
+      </div>
+
+      <div style={{ display: 'flex', marginLeft: 26 }}>
+        {byType.map((t) => (
+          <div key={t.workType} style={{ flex: 1, textAlign: 'center', marginTop: 10 }}>
+            <div style={{ fontSize: 12.5, fontWeight: 600 }}>{t.label}</div>
+            <div className="task-sub" style={{ fontSize: 11 }}>{t.works}건</div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function ScoreBarRow({ value, color, valueColor }) {
-  const pct = value != null ? Math.min(100, (value / SCORE_MAX) * 100) : 0;
+function ScoreColumn({ value, color, valueColor }) {
+  const barHeight = value != null ? Math.max(0, Math.min(100, (value / SCORE_MAX) * 100)) / 100 * CHART_H : 0;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
-      <div style={{ flex: 1, height: 10, borderRadius: 4, background: 'var(--gray-soft)', overflow: 'hidden' }}>
-        {value != null && (
-          <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '0 4px 4px 0' }} />
-        )}
-      </div>
-      <span className="mono" style={{ width: 34, textAlign: 'right', fontSize: 12.5, color: valueColor || 'var(--text)', fontWeight: valueColor ? 400 : 700 }}>
+    <div style={{ width: BAR_W, height: CHART_H, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
+      <span className="mono" style={{ fontSize: 11.5, marginBottom: 4, color: value != null ? (valueColor || 'var(--text)') : 'var(--text-faint)', fontWeight: value != null && !valueColor ? 700 : 400 }}>
         {value != null ? value.toFixed(1) : '-'}
       </span>
+      <div style={{ width: '100%', height: barHeight, background: value != null ? color : 'transparent', borderRadius: '4px 4px 0 0' }} />
     </div>
   );
 }
