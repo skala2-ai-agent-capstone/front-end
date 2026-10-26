@@ -210,7 +210,7 @@ function WorkspaceView({ workId }) {
   const canEdit = editable && !isCompleted;
 
   return (
-    <section className="page active">
+    <section className="page active ws-page">
       <div className="topheader">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           <button className="btn-back" onClick={() => navigate(-1)} title="뒤로 가기">
@@ -269,7 +269,6 @@ function WorkspaceView({ workId }) {
                 <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
               </button>
             </div>
-            <div className="chat-hint">Enter로 전송 · Shift+Enter로 줄바꿈</div>
           </div>
         </div>
 

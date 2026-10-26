@@ -383,19 +383,21 @@
   .task-menu-item:hover{background:var(--gray-soft);}
   .task-menu-item small{color:var(--text-faint); font-weight:500; font-size:12px;}
 
-  .ws-grid{display:grid; grid-template-columns:1fr 310px; gap:14px; height:calc(100vh - 230px); min-height:500px;}
+  /* 업무 공간은 화면 높이에 맞춘다: 채팅 아래 여백을 제목 위 여백(.main 위 패딩 26px)과 같게 */
+  .main:has(> .ws-page){padding-bottom:26px;}
+  .ws-page.active{display:flex; flex-direction:column; height:calc(100vh - 52px); min-height:620px;}
+  .ws-grid{display:grid; grid-template-columns:1fr 310px; gap:14px; flex:1; min-height:0;}
   .chat-main{background:var(--card); border-radius:16px; box-shadow:var(--shadow-card); display:flex; flex-direction:column; min-height:0; overflow:hidden;}
   .chat-thread{flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:22px; padding:26px 30px 10px;}
   .turn.user{display:flex; justify-content:flex-end;}
-  .user-bubble{max-width:74%; background:var(--gray-soft); padding:12px 16px; border-radius:16px; font-size:var(--fs-body-lg); line-height:1.6;}
+  .user-bubble{max-width:74%; background:var(--gray-soft); padding:12px 16px; border-radius:16px; font-size:16.5px; line-height:1.6;}
   .turn.assistant{display:flex; gap:12px; max-width:90%;}
   .assistant-avatar{width:26px; height:26px; border-radius:7px; flex:none; margin-top:2px; background:linear-gradient(135deg, var(--primary-line), var(--primary-dark)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;}
-  .assistant-body{font-size:var(--fs-body-lg); line-height:1.7; padding-top:2px; white-space:pre-wrap;}
+  .assistant-body{font-size:16.5px; line-height:1.7; padding-top:2px; white-space:pre-wrap;}
   .assistant-body b{color:var(--primary-dark);}
   .chat-fixed-input{border-top:1px solid var(--border); background:var(--card); padding:14px 24px 20px;}
   .chat-input-pill{display:flex; align-items:center; gap:10px; border:1px solid var(--border-strong); border-radius:20px; padding:12px 16px; background:var(--card);}
-  .chat-input-pill input{flex:1; border:none; outline:none; font-size:var(--fs-body-lg); background:transparent;}
-  .chat-hint{text-align:center; font-size:12px; color:var(--text-faint); margin-top:9px;}
+  .chat-input-pill input{flex:1; border:none; outline:none; font-size:16.5px; background:transparent;}
 
   .ws-sidebar{display:flex; flex-direction:column; gap:14px; overflow-y:auto; min-height:0;}
 
