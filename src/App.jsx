@@ -11,6 +11,7 @@ import ReviewListPage from './pages/ReviewListPage';
 import ReviewDetailPage from './pages/ReviewDetailPage';
 import TeamWorksPage from './pages/TeamWorksPage';
 import TeamDashboardPage from './pages/TeamDashboardPage';
+import TeamCoachingReportPage from './pages/TeamCoachingReportPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 
 function ProtectedLayout() {
@@ -40,6 +41,7 @@ function AppRoutes() {
         <Route path="/review/:reviewRequestId" element={<ReviewDetailPage />} />
         <Route path="/team-works" element={<TeamWorksPage />} />
         <Route path="/dashboard" element={<TeamDashboardPage />} />
+        <Route path="/dashboard/coaching" element={<TeamCoachingReportPage />} />
         <Route path="/settings" element={<AdminSettingsPage />} />
       </Route>
       <Route path="/" element={<RootRedirect />} />

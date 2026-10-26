@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
 
@@ -14,6 +15,7 @@ function trendPoints(dailyTrend) {
 }
 
 export default function TeamDashboardPage() {
+  const navigate = useNavigate();
   const { profile, toast } = useApp();
   const [dashboard, setDashboard] = useState(null);
   const [error, setError] = useState('');
@@ -85,6 +87,7 @@ export default function TeamDashboardPage() {
           </div>
           <button className="btn btn-ghost btn-sm" onClick={applyPeriod}>적용</button>
           <button className="btn btn-ghost" onClick={exportReport}>리포트 내보내기</button>
+          <button className="btn btn-primary" onClick={() => navigate('/dashboard/coaching')}>팀 코칭 리포트</button>
         </div>
       </div>
       <div className="page-sub"><p>{dashboard.teamName} · 최소 집계 인원 {dashboard.minAggregationSize}명</p></div>
