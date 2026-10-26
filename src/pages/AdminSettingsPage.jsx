@@ -244,7 +244,7 @@ function RubricsTab({ rubrics, reload }) {
 
       <div className="rb-grid">
         <div className="card wt-list">
-          <div className="field-label" style={{ padding: '6px 10px 2px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.03em', color: 'var(--text-faint)' }}>업무 유형</div>
+          <div className="field-label" style={{ padding: '6px 10px 2px', fontSize: 12.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.03em', color: 'var(--text-faint)' }}>업무 유형</div>
           {workTypes.map((w) => {
             const hasDraft = rubrics.some((r) => r.workType === w.key && r.status === '초안');
             return (
