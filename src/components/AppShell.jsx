@@ -44,10 +44,6 @@ export default function AppShell() {
           {role === 'team_lead' && (
             <>
               <div className="nav-label">평가</div>
-              <NavLink to="/report" className={navClass}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
-                개인 평가 리포트
-              </NavLink>
               <NavLink to="/review" className={navClass}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 3v18M3 7l4-4 4 4M3 7a4 4 0 0 0 8 0M13 7l4-4 4 4M13 7a4 4 0 0 0 8 0" /></svg>
                 평가 검토
@@ -60,6 +56,10 @@ export default function AppShell() {
               <NavLink to="/dashboard" className={navClass}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 19V10M12 19V5M20 19v-7" /></svg>
                 팀 대시보드
+              </NavLink>
+              <NavLink to="/dashboard/coaching" className={navClass}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                팀 코칭 리포트
               </NavLink>
               <NavLink to="/settings" className={navClass}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82" /></svg>
