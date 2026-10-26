@@ -129,7 +129,7 @@ export default function TaskDashboardPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <b style={{ fontSize: 18 }}>평가 검토가 필요한 업무</b>
               {reviews && reviews.length > 0 && (
-                <button className="btn-link" onClick={() => navigate('/review')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 18, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+                <button className="btn-link" onClick={() => navigate('/review')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 16, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
                   전체 보기 →
                 </button>
               )}
@@ -186,7 +186,7 @@ export default function TaskDashboardPage() {
       <div className="card" style={{ padding: 20 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <b style={{ fontSize: 18 }}>최근 업무</b>
-          <button className="btn-link" onClick={() => navigate('/workspace')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 18, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+          <button className="btn-link" onClick={() => navigate('/workspace')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 16, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
             전체 업무 →
           </button>
         </div>
