@@ -205,6 +205,9 @@ function WorkspaceView({ workId }) {
   }
 
   const { summary, editable } = detail;
+  const isCompleted = summary.status === 'completed';
+  // 이미 완료 접수된 업무는 본인이어도 다시 대화·제출할 수 없다 — 재제출할 때마다 평가가 중복 생성되는 걸 막기 위함
+  const canEdit = editable && !isCompleted;
 
   return (
     <section className="page active">
@@ -218,7 +221,11 @@ function WorkspaceView({ workId }) {
         <span className={`badge ${stageBadgeClass(summary.stage)}`}>{summary.stage}</span>
       </div>
       <div className="page-sub" style={{ marginBottom: 16 }}>
-        <p>업무 유형: {summary.workTypeLabel || '미정'}{!editable && ' · 읽기 전용(팀장 조회)'}</p>
+        <p>
+          업무 유형: {summary.workTypeLabel || '미정'}
+          {!editable && ' · 읽기 전용(팀장 조회)'}
+          {editable && isCompleted && ' · 읽기 전용(완료 접수된 업무)'}
+        </p>
       </div>
 
       <div className="ws-grid">
@@ -232,7 +239,7 @@ function WorkspaceView({ workId }) {
                     <div className="assistant-avatar">✦</div>
                     <div className="assistant-body">
                       {renderFormatted(m.content)}
-                      {editable && (
+                      {canEdit && (
                         <div><button className="btn btn-ghost btn-sm" type="button" style={{ marginTop: 6 }} onClick={() => putAnswerInDraft(m.content)}>산출물에 넣기</button></div>
                       )}
                     </div>
@@ -244,7 +251,7 @@ function WorkspaceView({ workId }) {
             )}
           </div>
           <div className="chat-fixed-input">
-            {editable && (
+            {canEdit && (
               <button
                 className="btn btn-ghost btn-sm lf-trigger"
                 type="button"
@@ -257,8 +264,8 @@ function WorkspaceView({ workId }) {
             )}
             <div className="chat-input-pill">
               <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-                placeholder={editable ? 'AI에게 메시지 보내기…' : '읽기 전용 업무입니다'} disabled={!editable || sending} />
-              <button className="send-btn" onClick={handleSend} disabled={!editable || sending}>
+                placeholder={canEdit ? 'AI에게 메시지 보내기…' : isCompleted ? '완료 접수된 업무입니다' : '읽기 전용 업무입니다'} disabled={!canEdit || sending} />
+              <button className="send-btn" onClick={handleSend} disabled={!canEdit || sending}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
               </button>
             </div>
@@ -267,7 +274,7 @@ function WorkspaceView({ workId }) {
         </div>
 
         <div className="ws-sidebar">
-          {editable && (
+          {canEdit && (
             <LiveFeedbackPanel
               phase={liveFeedback.phase}
               display={liveFeedback.display}
@@ -319,7 +326,7 @@ function WorkspaceView({ workId }) {
                     <div className="ref-item" style={{ cursor: 'pointer' }} onClick={() => handleViewReference(r.docId, r.version)}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
                       <span style={{ flex: 1 }}>{r.title}{r.source === 'accessed' && <span className="task-sub"> (열람함)</span>}</span>
-                      {editable && (
+                      {canEdit && (
                         <button type="button" title="지정 해제" disabled={refBusy}
                           onClick={(e) => { e.stopPropagation(); handleRemoveReference(r.docId, r.version); }}
                           style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', padding: 0, flex: 'none', fontSize: 15 }}>×</button>
@@ -335,7 +342,7 @@ function WorkspaceView({ workId }) {
               })}
               {detail.internalReferences.length === 0 && <p className="task-sub">아직 지정한 사내 자료가 없어요.</p>}
             </div>
-            {editable && (
+            {canEdit && (
               refPickerOpen ? (
                 <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
                   <select value={refPickerValue} onChange={(e) => setRefPickerValue(e.target.value)} style={{ flex: 1, minWidth: 0 }} disabled={refBusy}>
@@ -355,11 +362,11 @@ function WorkspaceView({ workId }) {
             <div className="doc-toolbar">
               <h3 style={{ margin: 0 }}>{detail.artifactTitle}</h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {editable && unsavedDraft && <span className="task-sub" style={{ fontSize: 11 }}>저장 안 됨</span>}
+                {canEdit && unsavedDraft && <span className="task-sub" style={{ fontSize: 11 }}>저장 안 됨</span>}
                 {detail.artifact && <span className="chip on" style={{ fontSize: 11, padding: '3px 9px' }}>{detail.artifact.version}</span>}
               </div>
             </div>
-            {editable ? (
+            {canEdit ? (
               <textarea className="doc-body" aria-label="산출물 본문" value={draft} disabled={savingDraft}
                 onChange={(e) => setEditedDraft(e.target.value)}
                 placeholder="AI와 대화를 시작하면 최근 답변이 여기에 들어와요. 직접 고쳐서 저장할 수 있어요."
@@ -369,7 +376,7 @@ function WorkspaceView({ workId }) {
                 {detail.artifact ? detail.artifact.content : <p className="task-sub">AI와 대화를 시작하면 여기에 산출물이 쌓여요.</p>}
               </div>
             )}
-            {editable && (
+            {canEdit && (
               <div className="doc-foot">
                 <button className="btn btn-ghost" style={{ flex: 1 }} onClick={handleSaveDraft} disabled={savingDraft}>{savingDraft ? '저장 중…' : '초안 저장'}</button>
                 <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleComplete} disabled={completing}>{completing ? '접수 중…' : '최종 완료'}</button>
