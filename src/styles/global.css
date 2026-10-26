@@ -504,7 +504,7 @@
   .dropzone b{display:block; font-size:14px; margin-top:6px;}
   .dropzone p{margin:4px 0 14px; color:var(--text-muted); font-size:12.5px;}
   .upload-opts{display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap;}
-  .upload-opts select, .rb-toolbar select, .ev-add{padding:7px 10px; border:1px solid var(--border-strong); border-radius:6px; background:var(--card); color:var(--text);}
+  .upload-opts select, .upload-opts input, .rb-toolbar select, .ev-add{padding:7px 10px; border:1px solid var(--border-strong); border-radius:6px; background:var(--card); color:var(--text);}
   .sec-head{display:flex; justify-content:space-between; align-items:center; padding:16px 16px 12px;}
   .sec-head h3{font-size:13.5px;}
   .sec-head span{font-size:12px; color:var(--text-faint);}
@@ -523,6 +523,10 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   .agent-result{background:var(--primary-subdued); border-radius:8px; padding:12px 13px; font-size:12.8px; color:var(--primary-dark);}
   .agent-result b{color:var(--primary-dark);}
+  .agent-result.fail{background:var(--red-soft); color:var(--red);}
+  .agent-result.fail b{color:var(--red);}
+  .step.fail .step-ico{border-color:var(--red); background:var(--red-soft);}
+  .step.fail small{color:var(--red);}
   .agent-note{font-size:12px; color:var(--text-faint); border-top:1px dashed var(--border); padding-top:10px;}
 
   /* ================= 운영 설정: 평가 기준 관리 ================= */
