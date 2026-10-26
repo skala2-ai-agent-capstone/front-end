@@ -34,6 +34,14 @@ function WorkspaceView({ workId }) {
   const [editedDraft, setEditedDraft] = useState(null);
   const threadRef = useRef(null);
 
+  // 사내 참고 자료: 지정·열람
+  const [refCatalog, setRefCatalog] = useState(null);
+  const [refPickerOpen, setRefPickerOpen] = useState(false);
+  const [refPickerValue, setRefPickerValue] = useState('');
+  const [refBusy, setRefBusy] = useState(false);
+  const [expandedRef, setExpandedRef] = useState(null);
+  const [refContent, setRefContent] = useState({});
+
   const hasUserMessages = messages.some((m) => m.role === 'user');
   const answeredTurns = messages.filter((m) => m.role === 'assistant').length;
   const liveFeedback = useLiveFeedback(workId, answeredTurns);
@@ -113,6 +121,61 @@ function WorkspaceView({ workId }) {
       toast(err.message);
     } finally {
       setCompleting(false);
+    }
+  }
+
+  async function refreshDetail() {
+    try {
+      const fresh = await api.get(`/api/works/${workId}`);
+      setDetail(fresh);
+    } catch (err) {
+      toast(err.message);
+    }
+  }
+
+  function openRefPicker() {
+    setRefPickerOpen(true);
+    if (refCatalog === null) {
+      api.get('/api/references').then(setRefCatalog).catch((err) => { toast(err.message); setRefCatalog([]); });
+    }
+  }
+
+  async function handleAddReference() {
+    if (!refPickerValue) return;
+    const [docId, version] = refPickerValue.split('|');
+    setRefBusy(true);
+    try {
+      await api.post(`/api/works/${workId}/references`, { docId, version });
+      await refreshDetail();
+      setRefPickerValue('');
+      setRefPickerOpen(false);
+    } catch (err) {
+      toast(err.message);
+    } finally {
+      setRefBusy(false);
+    }
+  }
+
+  async function handleRemoveReference(docId, version) {
+    setRefBusy(true);
+    try {
+      await api.delete(`/api/works/${workId}/references/${docId}/${version}`);
+      await refreshDetail();
+    } catch (err) {
+      toast(err.message);
+    } finally {
+      setRefBusy(false);
+    }
+  }
+
+  function handleViewReference(docId, version) {
+    const key = `${docId}-${version}`;
+    if (expandedRef === key) { setExpandedRef(null); return; }
+    setExpandedRef(key);
+    if (refContent[key] === undefined) {
+      api.get(`/api/works/${workId}/references/${docId}/${version}`)
+        .then((d) => setRefContent((prev) => ({ ...prev, [key]: d.content })))
+        .catch((err) => setRefContent((prev) => ({ ...prev, [key]: `(불러오기 실패: ${err.message})` })));
     }
   }
 
@@ -246,16 +309,47 @@ function WorkspaceView({ workId }) {
           </div>
           <div className="card ws-panel">
             <h3>사내 참고 자료</h3>
-            <p className="task-sub" style={{ marginBottom: 8 }}>AI가 답변을 만들 때 자동으로 참고하는 자료예요.</p>
+            <p className="task-sub" style={{ marginBottom: 8 }}>지정한 자료는 AI 대화에 함께 전달돼요.</p>
             <div>
-              {detail.internalReferences.map((r) => (
-                <div className="ref-item" key={`${r.docId}-${r.version}`}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
-                  {r.title}
-                </div>
-              ))}
-              {detail.internalReferences.length === 0 && <p className="task-sub">아직 참고한 사내 자료가 없어요.</p>}
+              {detail.internalReferences.map((r) => {
+                const key = `${r.docId}-${r.version}`;
+                const isOpen = expandedRef === key;
+                return (
+                  <div key={key}>
+                    <div className="ref-item" style={{ cursor: 'pointer' }} onClick={() => handleViewReference(r.docId, r.version)}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
+                      <span style={{ flex: 1 }}>{r.title}{r.source === 'accessed' && <span className="task-sub"> (열람함)</span>}</span>
+                      {editable && (
+                        <button type="button" title="지정 해제" disabled={refBusy}
+                          onClick={(e) => { e.stopPropagation(); handleRemoveReference(r.docId, r.version); }}
+                          style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', padding: 0, flex: 'none', fontSize: 15 }}>×</button>
+                      )}
+                    </div>
+                    {isOpen && (
+                      <div className="task-sub" style={{ padding: '6px 8px 10px 30px', whiteSpace: 'pre-wrap' }}>
+                        {refContent[key] === undefined ? '불러오는 중…' : refContent[key]}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {detail.internalReferences.length === 0 && <p className="task-sub">아직 지정한 사내 자료가 없어요.</p>}
             </div>
+            {editable && (
+              refPickerOpen ? (
+                <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                  <select value={refPickerValue} onChange={(e) => setRefPickerValue(e.target.value)} style={{ flex: 1, minWidth: 0 }} disabled={refBusy}>
+                    <option value="">{refCatalog === null ? '불러오는 중…' : '자료 선택'}</option>
+                    {refCatalog?.filter((c) => !detail.internalReferences.some((r) => r.docId === c.docId && r.version === c.version))
+                      .map((c) => <option key={`${c.docId}|${c.version}`} value={`${c.docId}|${c.version}`}>{c.title} · {c.version} ({c.status})</option>)}
+                  </select>
+                  <button className="btn btn-sm btn-primary" onClick={handleAddReference} disabled={refBusy || !refPickerValue}>추가</button>
+                  <button className="btn btn-sm" onClick={() => setRefPickerOpen(false)} disabled={refBusy}>취소</button>
+                </div>
+              ) : (
+                <button className="btn btn-sm" style={{ marginTop: 10 }} onClick={openRefPicker}>+ 자료 추가</button>
+              )
+            )}
           </div>
           <div className="card ws-panel">
             <div className="doc-toolbar">
