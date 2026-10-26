@@ -352,6 +352,14 @@
 
   .filters{display:flex; gap:8px; flex-wrap:wrap;}
 
+  .pagination{display:flex; align-items:center; justify-content:center; gap:6px; padding:16px 20px; border-top:1px solid var(--border);}
+  .pagination button{min-width:32px; height:32px; padding:0 6px; border:1px solid var(--border-strong); background:var(--card); border-radius:8px; font-size:13px; font-weight:600; color:var(--text-muted); cursor:pointer; display:inline-flex; align-items:center; justify-content:center;}
+  .pagination button svg{width:14px; height:14px;}
+  .pagination button:hover:not(:disabled){background:var(--gray-soft); color:var(--text);}
+  .pagination button.active{background:var(--primary); border-color:var(--primary); color:#fff;}
+  .pagination button:disabled{opacity:.35; cursor:default;}
+  .pagination-ellipsis{color:var(--text-faint); padding:0 4px; font-size:13px;}
+
   /* AI 업무 공간 — 업무 유형 탭 (밑줄 스타일) */
   .ws-tabs{display:flex; gap:28px; border-bottom:1px solid var(--border); margin-bottom:20px; flex-wrap:wrap;}
   .ws-tab{background:none; border:none; padding:0 2px 14px; margin-bottom:-1px; font-size:15px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer;}

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { stageBadgeClass } from '../utils/stage';
 import NewTaskModal from '../components/NewTaskModal';
+import Pagination, { PAGE_SIZE } from '../components/Pagination';
 
 export default function WorkspaceListPage() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function WorkspaceListPage() {
   const [workTypes, setWorkTypes] = useState([]);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState(searchParams.get('q') || '');
+  const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,12 +23,15 @@ export default function WorkspaceListPage() {
   }, []);
 
   useEffect(load, [load]);
+  useEffect(() => { setPage(1); }, [filter, search]);
 
   const rows = useMemo(() => {
     if (!works) return [];
     const q = search.trim().toLowerCase();
     return works.filter((w) => (filter === 'all' || w.workType === filter) && (!q || w.title.toLowerCase().includes(q)));
   }, [works, filter, search]);
+
+  const pagedRows = useMemo(() => rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [rows, page]);
 
   function initialOf(w) {
     return (w.workTypeLabel || w.title || '?').slice(0, 2).toUpperCase();
@@ -73,7 +78,7 @@ export default function WorkspaceListPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((w) => (
+            {pagedRows.map((w) => (
               <tr key={w.workId} className="row-link" onClick={() => navigate(`/workspace/${w.workId}`)}>
                 <td>
                   <div className="task-name-cell">
@@ -92,6 +97,7 @@ export default function WorkspaceListPage() {
           </tbody>
         </table>
         {works && rows.length === 0 && <p className="task-sub" style={{ padding: 16 }}>업무가 없어요.</p>}
+        <Pagination page={page} total={rows.length} onChange={setPage} />
       </div>
 
       {modalOpen && <NewTaskModal onClose={() => setModalOpen(false)} onCreated={handleCreated} workTypes={workTypes} />}
