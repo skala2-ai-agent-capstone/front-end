@@ -11,6 +11,8 @@ export default function WorkspacePage() {
   return <WorkspaceView key={taskId} workId={taskId} />;
 }
 
+const latestAnswer = (messages) => [...messages].reverse().find((m) => m.role === 'assistant')?.content ?? '';
+
 function WorkspaceView({ workId }) {
   const { toast } = useApp();
   const navigate = useNavigate();
@@ -21,10 +23,17 @@ function WorkspaceView({ workId }) {
   const [sending, setSending] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [completing, setCompleting] = useState(false);
+  // 산출물 편집본. null이면 손대지 않은 상태라 저장본(없으면 최근 AI 답변)을 그대로 보여 준다
+  const [editedDraft, setEditedDraft] = useState(null);
   const threadRef = useRef(null);
 
   const hasUserMessages = messages.some((m) => m.role === 'user');
-  const liveFeedback = useLiveFeedback(workId, hasUserMessages);
+  const answeredTurns = messages.filter((m) => m.role === 'assistant').length;
+  const liveFeedback = useLiveFeedback(workId, answeredTurns);
+
+  const savedContent = detail?.artifact?.content ?? null;
+  const draft = editedDraft ?? savedContent ?? latestAnswer(messages);
+  const unsavedDraft = draft !== (savedContent ?? '');
 
   useEffect(() => {
     let cancelled = false;
@@ -64,12 +73,18 @@ function WorkspaceView({ workId }) {
     }
   }
 
+  function putAnswerInDraft(content) {
+    if (editedDraft !== null && unsavedDraft && !window.confirm('저장하지 않은 수정이 있어요. 이 답변으로 바꿀까요?')) return;
+    setEditedDraft(content);
+  }
+
   async function handleSaveDraft() {
-    const content = detail.artifact?.content ?? '';
+    if (!draft.trim()) { toast('저장할 내용이 없어요. AI 답변을 산출물에 넣거나 직접 작성하세요.'); return; }
     setSavingDraft(true);
     try {
-      const artifact = await api.post(`/api/works/${workId}/artifacts`, { content });
+      const artifact = await api.post(`/api/works/${workId}/artifacts`, { content: draft });
       setDetail((prev) => ({ ...prev, artifact }));
+      setEditedDraft(null);
       toast(`${artifact.version} 초안을 저장했어요.`);
     } catch (err) {
       toast(err.message);
@@ -80,6 +95,7 @@ function WorkspaceView({ workId }) {
 
   async function handleComplete() {
     if (!detail.artifact) { toast('먼저 산출물을 저장하세요.'); return; }
+    if (unsavedDraft) { toast('저장하지 않은 수정이 있어요. 초안을 먼저 저장하세요.'); return; }
     setCompleting(true);
     try {
       await api.post('/api/work-events', { taskId: workId, deliverableVersion: detail.artifact.version });
@@ -123,7 +139,17 @@ function WorkspaceView({ workId }) {
             {messages.map((m) => (
               m.role === 'user'
                 ? <div className="turn user" key={m.messageId}><div className="user-bubble">{m.content}</div></div>
-                : <div className="turn assistant" key={m.messageId}><div className="assistant-avatar">✦</div><div className="assistant-body">{m.content}</div></div>
+                : (
+                  <div className="turn assistant" key={m.messageId}>
+                    <div className="assistant-avatar">✦</div>
+                    <div className="assistant-body">
+                      {m.content}
+                      {editable && (
+                        <div><button className="btn btn-ghost btn-sm" type="button" style={{ marginTop: 6 }} onClick={() => putAnswerInDraft(m.content)}>산출물에 넣기</button></div>
+                      )}
+                    </div>
+                  </div>
+                )
             ))}
             {sending && (
               <div className="turn assistant"><div className="assistant-avatar">✦</div><div className="assistant-body">···</div></div>
@@ -158,6 +184,7 @@ function WorkspaceView({ workId }) {
               phase={liveFeedback.phase}
               display={liveFeedback.display}
               cooldownMessage={liveFeedback.cooldownMessage}
+              needsNewTurns={liveFeedback.needsNewTurns}
               hasUserMessages={hasUserMessages}
             />
           )}
@@ -197,11 +224,21 @@ function WorkspaceView({ workId }) {
           <div className="card ws-panel">
             <div className="doc-toolbar">
               <h3 style={{ margin: 0 }}>{detail.artifactTitle}</h3>
-              {detail.artifact && <span className="chip on" style={{ fontSize: 11, padding: '3px 9px' }}>{detail.artifact.version}</span>}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {editable && unsavedDraft && <span className="task-sub" style={{ fontSize: 11 }}>저장 안 됨</span>}
+                {detail.artifact && <span className="chip on" style={{ fontSize: 11, padding: '3px 9px' }}>{detail.artifact.version}</span>}
+              </div>
             </div>
-            <div className="doc-body">
-              {detail.artifact ? detail.artifact.content : <p className="task-sub">AI와 대화를 시작하면 여기에 산출물이 쌓여요.</p>}
-            </div>
+            {editable ? (
+              <textarea className="doc-body" aria-label="산출물 본문" value={draft} disabled={savingDraft}
+                onChange={(e) => setEditedDraft(e.target.value)}
+                placeholder="AI와 대화를 시작하면 최근 답변이 여기에 들어와요. 직접 고쳐서 저장할 수 있어요."
+                rows={9} style={{ width: '100%', maxHeight: 360, border: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, display: 'block' }} />
+            ) : (
+              <div className="doc-body">
+                {detail.artifact ? detail.artifact.content : <p className="task-sub">AI와 대화를 시작하면 여기에 산출물이 쌓여요.</p>}
+              </div>
+            )}
             {editable && (
               <div className="doc-foot">
                 <button className="btn btn-ghost" style={{ flex: 1 }} onClick={handleSaveDraft} disabled={savingDraft}>{savingDraft ? '저장 중…' : '초안 저장'}</button>

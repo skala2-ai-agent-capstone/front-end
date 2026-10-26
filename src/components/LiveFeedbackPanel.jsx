@@ -4,7 +4,7 @@ const STATE_META = {
   pending: { color: 'var(--text-faint)', text: '확인 필요' },
 };
 
-export default function LiveFeedbackPanel({ phase, display, cooldownMessage, hasUserMessages }) {
+export default function LiveFeedbackPanel({ phase, display, cooldownMessage, needsNewTurns, hasUserMessages }) {
   return (
     <div className="card ws-panel" id="liveFeedbackPanel">
       <h3>실시간 피드백</h3>
@@ -43,6 +43,9 @@ export default function LiveFeedbackPanel({ phase, display, cooldownMessage, has
             {display.suggestedPrompt && (
               <p className="task-sub" style={{ marginTop: 8 }}>추천 프롬프트: “{display.suggestedPrompt}”</p>
             )}
+            {cooldownMessage
+              ? <p className="lf-cooldown">{cooldownMessage}</p>
+              : needsNewTurns && <p className="lf-cooldown">대화를 더 나누면 다시 피드백을 받을 수 있어요.</p>}
           </>
         )}
       </div>
