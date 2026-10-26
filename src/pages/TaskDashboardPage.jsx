@@ -125,7 +125,7 @@ export default function TaskDashboardPage() {
             <div className="card stat-card"><div className="stat-label">검토 대기</div><div className="stat-val">{reviews ? reviews.length : '-'}</div></div>
           </div>
 
-          <div className="card">
+          <div className="card" style={{ marginBottom: 16 }}>
             <div className="tbl-head">
               <b style={{ fontSize: 15 }}>평가 검토가 필요한 업무</b>
               {reviews && reviews.length > 0 && (
