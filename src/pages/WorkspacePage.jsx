@@ -110,10 +110,28 @@ function WorkspaceView({ workId }) {
   }
 
   if (loadError) {
-    return <section className="page active"><div className="topheader"><h1>AI 업무 공간</h1></div><p className="task-sub" style={{ color: 'var(--red)' }}>{loadError}</p></section>;
+    return (
+      <section className="page active">
+        <div className="topheader">
+          <button className="btn-back" onClick={() => navigate(-1)} title="뒤로 가기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+        </div>
+        <p className="task-sub" style={{ color: 'var(--red)' }}>{loadError}</p>
+      </section>
+    );
   }
   if (!detail) {
-    return <section className="page active"><div className="topheader"><h1>AI 업무 공간</h1></div><p className="task-sub">불러오는 중…</p></section>;
+    return (
+      <section className="page active">
+        <div className="topheader">
+          <button className="btn-back" onClick={() => navigate(-1)} title="뒤로 가기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+        </div>
+        <p className="task-sub">불러오는 중…</p>
+      </section>
+    );
   }
 
   const { summary, editable } = detail;
