@@ -213,7 +213,7 @@ function RubricsTab({ rubrics, reload }) {
 
   return (
     <div className="settings-panel active">
-      <div className="card rb-toolbar">
+      <div className="rb-toolbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <select value={viewKey ? `${viewKey.docId}|${viewKey.version}` : ''} onChange={(e) => {
             const [docId, version] = e.target.value.split('|');
@@ -305,8 +305,7 @@ function RubricItemCard({
   return (
     <div className={`card crit${open ? ' open' : ''}`}>
       <div className="crit-head" onClick={onToggle}>
-        <span className="mono" style={{ flex: 'none', width: 112, fontSize: 12 }}>{item.itemId}</span>
-        <div style={{ minWidth: 0 }}><div className="crit-title">{item.item}</div><div className="crit-focus">{item.criterion}</div></div>
+        <div className="crit-title" style={{ flex: 1, minWidth: 0 }}>{item.item}</div>
         <ChevIcon />
       </div>
 

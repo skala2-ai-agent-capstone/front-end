@@ -174,15 +174,13 @@ export default function PolicyUploadPanel({ draftCount, onGenerated, onReview })
           onDrop={handleDrop}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
           <b>내규 파일을 끌어다 놓으세요</b>
-          <p>올리면 새 버전이 바로 현행이 되고, AI가 업무 유형별 평가 기준 초안을 만들어요</p>
-          <div className="upload-opts">
+          <div className="upload-opts" style={{ marginTop: 14 }}>
             <input aria-label="새 버전" value={version} onChange={(e) => setVersion(e.target.value)} placeholder="버전 (예: v1.2)" style={{ width: 130 }} />
             <button className="btn btn-primary btn-sm" disabled={busy || running} onClick={() => inputRef.current.click()}>
               {busy ? '올리는 중…' : '파일 선택'}
             </button>
             <input ref={inputRef} type="file" hidden accept=".pdf,.txt" onChange={handlePick} />
           </div>
-          <p style={{ margin: '12px 0 0' }}>내규·정책(.pdf, .txt)만 올릴 수 있어요. 제N조·별표 N. 형식이어야 조항으로 나뉩니다.</p>
         </div>
 
         <div className="card agent-card">
