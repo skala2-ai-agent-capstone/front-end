@@ -122,7 +122,7 @@ function WorkspaceView({ workId }) {
     <section className="page active">
       <div className="topheader">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
-          <button className="btn-back" onClick={() => navigate('/workspace')} title="업무 목록으로">
+          <button className="btn-back" onClick={() => navigate(-1)} title="뒤로 가기">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M15 18l-6-6 6-6" /></svg>
           </button>
           <h1 style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{summary.title}</h1>

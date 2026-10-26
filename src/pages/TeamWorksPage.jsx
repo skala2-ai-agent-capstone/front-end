@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
 import { stageBadgeClass } from '../utils/stage';
 
 export default function TeamWorksPage() {
   const navigate = useNavigate();
+  const { profile } = useApp();
   const [searchParams] = useSearchParams();
   const [works, setWorks] = useState(null);
   const [workTypes, setWorkTypes] = useState([]);
@@ -23,8 +25,10 @@ export default function TeamWorksPage() {
   const rows = useMemo(() => {
     if (!works) return [];
     const q = search.trim().toLowerCase();
-    return works.filter((w) => (filter === 'all' || w.workType === filter) && (!q || w.title.toLowerCase().includes(q)));
-  }, [works, filter, search]);
+    return works
+      .filter((w) => w.employeeId !== profile.userId)
+      .filter((w) => (filter === 'all' || w.workType === filter) && (!q || w.title.toLowerCase().includes(q)));
+  }, [works, filter, search, profile.userId]);
 
   function initialOf(w) {
     return (w.workTypeLabel || w.title || '?').slice(0, 2).toUpperCase();
