@@ -18,12 +18,23 @@ export default function TeamDashboardPage() {
   const [dashboard, setDashboard] = useState(null);
   const [error, setError] = useState('');
   const [busyType, setBusyType] = useState(null);
+  const [fromInput, setFromInput] = useState('');
+  const [toInput, setToInput] = useState('');
 
-  function load() {
-    api.get(`/api/teams/${profile.teamId}/dashboard`).then(setDashboard).catch((err) => setError(err.message));
+  function load(from, to) {
+    const query = from && to ? `?from=${from}&to=${to}` : '';
+    api.get(`/api/teams/${profile.teamId}/dashboard${query}`)
+      .then((d) => { setDashboard(d); setFromInput(d.periodFrom); setToInput(d.periodTo); })
+      .catch((err) => setError(err.message));
   }
 
-  useEffect(load, [profile.teamId]);
+  useEffect(() => load(), [profile.teamId]);
+
+  function applyPeriod() {
+    if (!fromInput || !toInput) { toast('시작일과 종료일을 모두 선택하세요'); return; }
+    if (fromInput > toInput) { toast('시작일이 종료일보다 늦을 수 없어요'); return; }
+    load(fromInput, toInput);
+  }
 
   async function approve(workType) {
     setBusyType(workType);
@@ -66,8 +77,13 @@ export default function TeamDashboardPage() {
         <div className="header-right">
           <div className="dchip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
-            {dashboard.periodFrom} - {dashboard.periodTo}
+            <input type="date" value={fromInput} onChange={(e) => setFromInput(e.target.value)}
+              style={{ border: 'none', background: 'none', font: 'inherit', color: 'inherit', padding: 0, width: 118 }} />
+            <span style={{ color: 'var(--text-faint)' }}>-</span>
+            <input type="date" value={toInput} onChange={(e) => setToInput(e.target.value)}
+              style={{ border: 'none', background: 'none', font: 'inherit', color: 'inherit', padding: 0, width: 118 }} />
           </div>
+          <button className="btn btn-ghost btn-sm" onClick={applyPeriod}>적용</button>
           <button className="btn btn-ghost" onClick={exportReport}>리포트 내보내기</button>
         </div>
       </div>
