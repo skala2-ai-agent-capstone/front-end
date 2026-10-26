@@ -13,6 +13,13 @@ export default function WorkspacePage() {
 
 const latestAnswer = (messages) => [...messages].reverse().find((m) => m.role === 'assistant')?.content ?? '';
 
+// 최소한의 마크다운: **굵게**만 처리하고, 줄바꿈은 white-space: pre-wrap으로 CSS에서 살린다
+function renderFormatted(text) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => (
+    part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : part
+  ));
+}
+
 function WorkspaceView({ workId }) {
   const { toast } = useApp();
   const navigate = useNavigate();
@@ -161,7 +168,7 @@ function WorkspaceView({ workId }) {
                   <div className="turn assistant" key={m.messageId}>
                     <div className="assistant-avatar">✦</div>
                     <div className="assistant-body">
-                      {m.content}
+                      {renderFormatted(m.content)}
                       {editable && (
                         <div><button className="btn btn-ghost btn-sm" type="button" style={{ marginTop: 6 }} onClick={() => putAnswerInDraft(m.content)}>산출물에 넣기</button></div>
                       )}
@@ -209,9 +216,13 @@ function WorkspaceView({ workId }) {
           <div className="card ws-panel">
             <h3>업무 정보</h3>
             <div className="ws-readonly">
-              {detail.registration && Object.keys(detail.registration).length > 0
-                ? Object.entries(detail.registration).map(([k, v]) => <div key={k}>{k}: {String(v)}</div>)
-                : <span className="task-sub">등록된 목적·요구사항이 없어요.</span>}
+              {detail.registrationItems && detail.registrationItems.length > 0 ? (
+                detail.registrationItems.map((item) => <div key={item.key}>{item.label}: {item.value}</div>)
+              ) : detail.registration && Object.keys(detail.registration).length > 0 ? (
+                Object.entries(detail.registration).map(([k, v]) => <div key={k}>{k}: {String(v)}</div>)
+              ) : (
+                <span className="task-sub">등록된 목적·요구사항이 없어요.</span>
+              )}
             </div>
           </div>
           <div className="card ws-panel">
@@ -220,7 +231,14 @@ function WorkspaceView({ workId }) {
               {detail.sourceDocuments.map((d) => (
                 <div className="ref-item" key={d.attachmentId}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
-                  {d.fileName || d.docId}{!d.textExtracted && <span className="task-sub"> (텍스트 추출 안 됨)</span>}
+                  <span style={{ flex: 1 }}>{d.fileName || d.docId}{!d.textExtracted && <span className="task-sub"> (텍스트 추출 안 됨)</span>}</span>
+                  {editable && (
+                    <button className="btn-link" type="button" title="원본 다운로드"
+                      onClick={() => api.downloadFile(`/api/works/${workId}/source-documents/${d.attachmentId}/file`, d.fileName || d.docId).catch((err) => toast(err.message))}
+                      style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: 0, flex: 'none' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: 15, height: 15 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                    </button>
+                  )}
                 </div>
               ))}
               {detail.sourceDocuments.length === 0 && <p className="task-sub">등록된 고객 자료가 없어요.</p>}

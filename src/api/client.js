@@ -60,9 +60,37 @@ async function requestForm(method, path, formData) {
   return handleResponse(res);
 }
 
+async function downloadFile(path, filename) {
+  const token = getToken();
+  const res = await fetch(BASE_URL + path, {
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) {
+    let message = `다운로드에 실패했어요 (${res.status})`;
+    try {
+      const json = await res.json();
+      message = json?.error?.message || message;
+    } catch { /* not json */ }
+    const err = new Error(message);
+    err.status = res.status;
+    throw err;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename || 'download';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export const api = {
   get: (path) => request('GET', path),
   post: (path, body) => request('POST', path, body),
   patch: (path, body) => request('PATCH', path, body),
+  delete: (path) => request('DELETE', path),
   postForm: (path, formData) => requestForm('POST', path, formData),
+  downloadFile,
 };
