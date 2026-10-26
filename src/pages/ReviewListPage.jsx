@@ -28,16 +28,14 @@ export default function ReviewListPage() {
             </thead>
             <tbody>
               {reviews.map((r) => (
-                <tr key={r.reviewRequestId}>
+                <tr key={r.reviewRequestId} className="row-link" onClick={() => navigate(`/review/${r.reviewRequestId}`)}>
                   <td><div className="task-name">{r.taskTitle || r.taskId}</div><div className="task-sub">{r.employeeId}</div></td>
                   <td>{r.workType || '-'}</td>
                   <td>{r.reason}</td>
                   <td><span className="badge badge-red">{r.displayStatus}</span></td>
                   <td className="mono">{new Date(r.submittedAt).toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>
-                    <button className="btn-open" onClick={() => navigate(`/review/${r.reviewRequestId}`)}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>열기
-                    </button>
+                    <svg className="row-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>
                   </td>
                 </tr>
               ))}
