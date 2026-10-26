@@ -165,8 +165,9 @@ export default function PolicyUploadPanel({ draftCount, onGenerated, onReview })
   const canRegenerate = !running && !busy && docs?.some((d) => d.collection === 'policies' && d.status === '현행');
 
   return (
-    <div className="upload-grid">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* 업로드 영역과 에이전트 진행 상황을 한 줄에 두고, 등록 자료 표는 아래에 전체 폭으로 둔다 */}
+      <div className="upload-grid">
         <div className={`card dropzone${dragging ? ' drag' : ''}`}
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={(e) => { e.preventDefault(); setDragging(false); }}
@@ -184,75 +185,75 @@ export default function PolicyUploadPanel({ draftCount, onGenerated, onReview })
           <p style={{ margin: '12px 0 0' }}>내규·정책(.pdf, .txt)만 올릴 수 있어요. 제N조·별표 N. 형식이어야 조항으로 나뉩니다.</p>
         </div>
 
-        <div className="card">
-          <div className="sec-head">
-            <h3>등록 자료</h3>
-            <span>{docs ? `${docs.length}건 · 현행 ${docs.filter((d) => d.status === '현행').length}건` : '불러오는 중…'}</span>
+        <div className="card agent-card">
+          <div className="agent-title">
+            <div className="agent-icon"><AiIcon /></div><b>평가 기준 설계 에이전트</b>
+            {generation?.status === '대기' && <span className="badge badge-amber" style={{ marginLeft: 'auto' }}>설계 중</span>}
+            {generation?.status === '완료' && <span className="badge badge-green" style={{ marginLeft: 'auto' }}>초안 저장됨</span>}
+            {generation?.status === '실패' && <span className="badge badge-red" style={{ marginLeft: 'auto' }}>실패</span>}
           </div>
-          <table>
-            <thead><tr><th>자료</th><th>유형</th><th>버전</th><th>상태</th><th>시행일</th><th>평가 기준</th></tr></thead>
-            <tbody>
-              {(docs || []).map((d) => (
-                <tr key={`${d.docId}@${d.version}`}>
-                  <td><div className="task-name">{d.title || d.sourceFile || d.docId}</div><div className="task-sub">{d.sourceFile ? `${d.docId} · ${d.sourceFile}` : d.docId}</div></td>
-                  <td>{d.indexed ? COLLECTION[d.collection] || '기타' : '기밀(색인 안 함)'}</td>
-                  <td className="mono">{d.version}</td>
-                  <td><span className={`badge ${STATUS_BADGE[d.status] || 'badge-gray'}`}>{d.status}</span></td>
-                  <td className="mono">{d.effectiveFrom || '—'}</td>
-                  <td>
-                    {d.collection !== 'policies' ? <span className="task-sub">—</span>
-                      : d.status !== '현행' ? <span className="task-sub">근거 제외</span>
-                        : !sameDoc(d) ? <span className="task-sub">미반영</span>
-                          : generation.status === '대기' ? <span className="badge badge-amber">초안 생성 중</span>
-                            : generation.status === '완료'
-                              ? <button className="badge badge-ai" style={{ border: 'none' }} onClick={onReview}>초안 검토 →</button>
-                              : <span className="badge badge-red">생성 실패</span>}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {generation ? (
+            <div className="agent-file"><DocIcon /><span className="name">{generation.sourceFile || `${generation.policyDocId} ${generation.policyVersion}`}</span><span className="chip chip-xs">내규</span></div>
+          ) : (
+            <div className="agent-sub">내규를 올리면 자동 실행돼요</div>
+          )}
+          <div>
+            {steps.map((step) => (
+              <div className={`step ${step.state}`} key={step.name}>
+                <span className="step-ico"></span>
+                <div><b>{step.name}</b><small>{step.detail}</small></div>
+              </div>
+            ))}
+          </div>
+          {generation?.status === '완료' && (
+            <div className="agent-result">
+              <b>초안 {generation.drafts.length}건 저장 완료</b> · 승인 전까지는 적용되지 않아요
+              <button className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} onClick={onReview}>초안 검토하기 →</button>
+            </div>
+          )}
+          {generation?.status === '실패' && (
+            <div className="agent-result fail">
+              <b>초안을 만들지 못했어요</b>{generation.error ? ` (${generation.error})` : ''}
+              <button className="btn btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} disabled={!canRegenerate} onClick={regenerate}>현행 내규로 다시 생성</button>
+            </div>
+          )}
+          {(!generation || generation.status === '대기') && (
+            <div className="agent-note">승인 전까지는 적용되지 않아요</div>
+          )}
+          {upload?.duplicate && generation?.status !== '대기' && generation?.status !== '실패' && (
+            <button className="btn btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} disabled={!canRegenerate} onClick={regenerate}>현행 내규로 다시 생성</button>
+          )}
         </div>
       </div>
 
-      <div className="card agent-card">
-        <div className="agent-title">
-          <div className="agent-icon"><AiIcon /></div><b>평가 기준 설계 에이전트</b>
-          {generation?.status === '대기' && <span className="badge badge-amber" style={{ marginLeft: 'auto' }}>설계 중</span>}
-          {generation?.status === '완료' && <span className="badge badge-green" style={{ marginLeft: 'auto' }}>초안 저장됨</span>}
-          {generation?.status === '실패' && <span className="badge badge-red" style={{ marginLeft: 'auto' }}>실패</span>}
+      <div className="card">
+        <div className="sec-head">
+          <h3>등록 자료</h3>
+          <span>{docs ? `${docs.length}건 · 현행 ${docs.filter((d) => d.status === '현행').length}건` : '불러오는 중…'}</span>
         </div>
-        {generation ? (
-          <div className="agent-file"><DocIcon /><span className="name">{generation.sourceFile || `${generation.policyDocId} ${generation.policyVersion}`}</span><span className="chip chip-xs">내규</span></div>
-        ) : (
-          <div className="agent-sub">내규를 올리면 자동 실행돼요</div>
-        )}
-        <div>
-          {steps.map((step) => (
-            <div className={`step ${step.state}`} key={step.name}>
-              <span className="step-ico"></span>
-              <div><b>{step.name}</b><small>{step.detail}</small></div>
-            </div>
-          ))}
-        </div>
-        {generation?.status === '완료' && (
-          <div className="agent-result">
-            <b>초안 {generation.drafts.length}건 저장 완료</b> · 승인 전까지는 적용되지 않아요
-            <button className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} onClick={onReview}>초안 검토하기 →</button>
-          </div>
-        )}
-        {generation?.status === '실패' && (
-          <div className="agent-result fail">
-            <b>초안을 만들지 못했어요</b>{generation.error ? ` (${generation.error})` : ''}
-            <button className="btn btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} disabled={!canRegenerate} onClick={regenerate}>현행 내규로 다시 생성</button>
-          </div>
-        )}
-        {(!generation || generation.status === '대기') && (
-          <div className="agent-note">승인 전까지는 적용되지 않아요</div>
-        )}
-        {upload?.duplicate && generation?.status !== '대기' && generation?.status !== '실패' && (
-          <button className="btn btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} disabled={!canRegenerate} onClick={regenerate}>현행 내규로 다시 생성</button>
-        )}
+        <table>
+          <thead><tr><th>자료</th><th>유형</th><th>버전</th><th>상태</th><th>시행일</th><th>평가 기준</th></tr></thead>
+          <tbody>
+            {(docs || []).map((d) => (
+              <tr key={`${d.docId}@${d.version}`}>
+                <td><div className="task-name">{d.title || d.sourceFile || d.docId}</div><div className="task-sub">{d.sourceFile ? `${d.docId} · ${d.sourceFile}` : d.docId}</div></td>
+                <td>{d.indexed ? COLLECTION[d.collection] || '기타' : '기밀(색인 안 함)'}</td>
+                <td className="mono">{d.version}</td>
+                <td><span className={`badge ${STATUS_BADGE[d.status] || 'badge-gray'}`}>{d.status}</span></td>
+                <td className="mono">{d.effectiveFrom || '—'}</td>
+                <td>
+                  {d.collection !== 'policies' ? <span className="task-sub">—</span>
+                    : d.status !== '현행' ? <span className="task-sub">근거 제외</span>
+                      : !sameDoc(d) ? <span className="task-sub">미반영</span>
+                        : generation.status === '대기' ? <span className="badge badge-amber">초안 생성 중</span>
+                          : generation.status === '완료'
+                            ? <button className="badge badge-ai" style={{ border: 'none' }} onClick={onReview}>초안 검토 →</button>
+                            : <span className="badge badge-red">생성 실패</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
