@@ -69,7 +69,7 @@ export default function TeamDashboardPage() {
             <input type="date" value={toInput} onChange={(e) => setToInput(e.target.value)}
               style={{ border: 'none', background: 'none', font: 'inherit', color: 'inherit', padding: 0, width: 118 }} />
           </div>
-          <button className="btn btn-ghost btn-sm" onClick={applyPeriod}>적용</button>
+          <button className="btn btn-primary btn-sm" onClick={applyPeriod}>적용</button>
         </div>
       </div>
       <div className="page-sub"><p>{dashboard.teamName} · 최소 집계 인원 {dashboard.minAggregationSize}명</p></div>

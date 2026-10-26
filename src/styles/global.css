@@ -164,7 +164,9 @@
   .sidebar{
     width:230px; flex:none; background:var(--sidebar-bg); border-right:1px solid var(--border);
     display:flex; flex-direction:column; padding:18px 14px;
+    position:sticky; top:0; height:100vh; overflow:hidden;
   }
+  #mainNav{flex:1; min-height:0; overflow-y:auto;}
   .brand{display:flex; align-items:center; gap:9px; padding:4px 6px 14px;}
   .brand-mark{width:26px; height:26px; border-radius:7px; background:var(--primary); display:flex; align-items:center; justify-content:center; flex:none;}
   .brand-mark svg{width:14px; height:14px;}
