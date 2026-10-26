@@ -104,6 +104,16 @@ export default function TaskDashboardPage() {
     return [...works].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 3);
   }, [works]);
 
+  const pendingReviewCount = useMemo(() => {
+    if (!reviews) return null;
+    return reviews.filter((r) => r.status === '검토 대기').length;
+  }, [reviews]);
+
+  const sortedReviews = useMemo(() => {
+    if (!reviews) return [];
+    return [...reviews].sort((a, b) => (a.status === '검토 대기' ? 0 : 1) - (b.status === '검토 대기' ? 0 : 1));
+  }, [reviews]);
+
   return (
     <section className="page active task-dashboard-page">
       <div className="topheader">
@@ -122,7 +132,7 @@ export default function TaskDashboardPage() {
       {!isSales && (
         <>
           <div className="stat-row">
-            <div className="card stat-card"><div className="stat-label">검토 대기</div><div className="stat-val">{reviews ? reviews.length : '-'}</div></div>
+            <div className="card stat-card"><div className="stat-label">검토 대기</div><div className="stat-val">{pendingReviewCount != null ? pendingReviewCount : '-'}</div></div>
           </div>
 
           <div className="card" style={{ padding: 20, marginBottom: 16 }}>
@@ -136,12 +146,12 @@ export default function TaskDashboardPage() {
             </div>
             {reviews && reviews.length > 0 && (
               <div className="recent-row">
-                {reviews.map((r) => (
+                {sortedReviews.slice(0, 3).map((r) => (
                   <button key={r.reviewRequestId} className="ws-card" onClick={() => navigate(`/review/${r.reviewRequestId}`)}>
                     <div className="ws-card-top"><span className="badge badge-red">{r.displayStatus}</span></div>
                     <div className="ws-card-title">{r.taskTitle || r.taskId}</div>
-                    <div className="ws-card-type">{r.reason}</div>
-                    <div className="mono" style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 2 }}>{r.employeeId} · {new Date(r.submittedAt).toLocaleDateString()}</div>
+                    <div className="ws-card-type">{r.workTypeLabel || r.workType} · {r.reason}</div>
+                    <div className="mono" style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 2 }}>{r.employeeName || r.employeeId} · {new Date(r.submittedAt).toLocaleDateString()}</div>
                   </button>
                 ))}
               </div>

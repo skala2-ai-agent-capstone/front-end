@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 
@@ -10,6 +10,11 @@ export default function ReviewListPage() {
   useEffect(() => {
     api.get('/api/reviews').then(setReviews).catch((err) => setError(err.message));
   }, []);
+
+  const sortedReviews = useMemo(() => {
+    if (!reviews) return [];
+    return [...reviews].sort((a, b) => (a.status === '검토 대기' ? 0 : 1) - (b.status === '검토 대기' ? 0 : 1));
+  }, [reviews]);
 
   return (
     <section className="page active">
@@ -27,10 +32,10 @@ export default function ReviewListPage() {
               <tr><th>업무</th><th>유형</th><th>사유</th><th>상태</th><th>접수</th><th></th></tr>
             </thead>
             <tbody>
-              {reviews.map((r) => (
+              {sortedReviews.map((r) => (
                 <tr key={r.reviewRequestId} className="row-link" onClick={() => navigate(`/review/${r.reviewRequestId}`)}>
-                  <td><div className="task-name">{r.taskTitle || r.taskId}</div><div className="task-sub">{r.employeeId}</div></td>
-                  <td>{r.workType || '-'}</td>
+                  <td><div className="task-name">{r.taskTitle || r.taskId}</div><div className="task-sub">{r.employeeName || r.employeeId}</div></td>
+                  <td>{r.workTypeLabel || r.workType || '-'}</td>
                   <td>{r.reason}</td>
                   <td><span className="badge badge-red">{r.displayStatus}</span></td>
                   <td className="mono">{new Date(r.submittedAt).toLocaleString()}</td>

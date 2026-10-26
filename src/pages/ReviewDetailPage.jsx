@@ -32,7 +32,7 @@ export default function ReviewDetailPage() {
       toast(
         decision === 'hold' ? '보류 상태를 유지했어요.'
           : decision === 'keep' ? '기존 점수로 확정했어요.'
-            : '수정 요청을 접수했어요. 재평가 후 본인 확인 단계로 돌아가요.',
+            : '수정한 점수로 본인 확인 단계로 돌아가요.',
       );
       navigate('/review');
     } catch (err) {
@@ -42,11 +42,17 @@ export default function ReviewDetailPage() {
     }
   }
 
+  function isEmptyMemo(memo) {
+    if (!memo || typeof memo !== 'object') return true;
+    return Object.values(memo).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
+  }
+
   if (error) return <section className="page active"><div className="topheader"><h1>평가 검토</h1></div><p className="task-sub" style={{ color: 'var(--red)' }}>{error}</p></section>;
   if (!detail) return <section className="page active"><div className="topheader"><h1>평가 검토</h1></div><p className="task-sub">불러오는 중…</p></section>;
 
   const { targetItems, reason, reviewMemo, appeal, evaluation } = detail;
   const items = evaluation.report.items.filter((it) => targetItems.includes(it.itemId));
+  const isPending = evaluation.evaluation.status === '검토 대기';
 
   return (
     <section className="page active">
@@ -62,22 +68,34 @@ export default function ReviewDetailPage() {
             ))}
           </div>
         </div>
-        <div className="card review-pane">
-          <h3>Agent 비교 메모</h3>
-          <div className="review-body">
-            <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12.5 }}>{JSON.stringify(reviewMemo, null, 2)}</pre>
+        {!isEmptyMemo(reviewMemo) && (
+          <div className="card review-pane">
+            <h3>Agent 비교 메모</h3>
+            <div className="review-body">
+              {reviewMemo.citedEvidence && reviewMemo.citedEvidence.length > 0 && (
+                <div>
+                  <b>근거</b>
+                  <ul style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+                    {reviewMemo.citedEvidence.map((id) => <li key={id} className="mono" style={{ fontSize: 12.5 }}>{id}</li>)}
+                  </ul>
+                </div>
+              )}
+              {Object.entries(reviewMemo).filter(([k, v]) => k !== 'citedEvidence' && v != null && (!Array.isArray(v) || v.length > 0)).map(([k, v]) => (
+                <p key={k} style={{ marginTop: 8 }}><b>{k}</b>: {Array.isArray(v) ? v.join(', ') : String(v)}</p>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         <div className="card review-pane">
           <h3>{appeal ? '이의 제기 내용' : '자동 감지 사유'}</h3>
           <div className="appeal-box">
             {appeal ? appeal.comment : reason}
-            {appeal && <div style={{ marginTop: 10, color: 'var(--text-faint)', fontSize: 12 }}>— {appeal.submittedBy} · {new Date(appeal.submittedAt).toLocaleString()}</div>}
+            {appeal && <div style={{ marginTop: 10, color: 'var(--text-faint)', fontSize: 12 }}>— {appeal.submittedByName || appeal.submittedBy} · {new Date(appeal.submittedAt).toLocaleString()}</div>}
           </div>
         </div>
       </div>
 
-      {overrideMode && (
+      {isPending && overrideMode && (
         <div className="card" style={{ padding: 18, marginBottom: 18 }}>
           <h3 style={{ marginTop: 0 }}>항목별 수정 점수</h3>
           {items.map((it) => (
@@ -94,22 +112,30 @@ export default function ReviewDetailPage() {
         </div>
       )}
 
-      <div className="card" style={{ padding: 18, marginBottom: 18 }}>
-        <div className="form-row"><label>검토 의견</label>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="검토 의견을 남겨주세요 (선택)" style={{ width: '100%', minHeight: 60, padding: '9px 12px', border: '1px solid var(--border-strong)', borderRadius: 8, font: 'inherit' }} />
-        </div>
-      </div>
+      {isPending ? (
+        <>
+          <div className="card" style={{ padding: 18, marginBottom: 18 }}>
+            <div className="form-row"><label>검토 의견</label>
+              <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="검토 의견을 남겨주세요 (선택)" style={{ width: '100%', minHeight: 60, padding: '9px 12px', border: '1px solid var(--border-strong)', borderRadius: 8, font: 'inherit' }} />
+            </div>
+          </div>
 
-      <div className="card" style={{ padding: '15px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: 13.5, color: 'var(--text-muted)' }}>keep은 바로 확정되고, override는 재평가 후 본인 확인으로 돌아갑니다.</div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn" onClick={() => resolve('hold')} disabled={busy}>보류 유지</button>
-          <button className="btn" onClick={() => resolve('keep')} disabled={busy}>기존 점수 유지</button>
-          {!overrideMode
-            ? <button className="btn btn-primary" onClick={() => setOverrideMode(true)} disabled={busy}>점수 수정 요청</button>
-            : <button className="btn btn-primary" onClick={() => resolve('override')} disabled={busy}>수정 요청 제출</button>}
+          <div className="card" style={{ padding: '15px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontSize: 13.5, color: 'var(--text-muted)' }}>keep은 바로 확정되고, override는 수정한 점수로 본인 확인 단계로 돌아갑니다.</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="btn" onClick={() => resolve('hold')} disabled={busy}>보류 유지</button>
+              <button className="btn" onClick={() => resolve('keep')} disabled={busy}>기존 점수 유지</button>
+              {!overrideMode
+                ? <button className="btn btn-primary" onClick={() => setOverrideMode(true)} disabled={busy}>점수 수정 요청</button>
+                : <button className="btn btn-primary" onClick={() => resolve('override')} disabled={busy}>수정 요청 제출</button>}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="card" style={{ padding: '15px 18px' }}>
+          <div style={{ fontSize: 13.5, color: 'var(--text-muted)' }}>이미 처리된 검토 건이에요 — 상태: {evaluation.evaluation.displayStatus}</div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
