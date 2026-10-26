@@ -1,30 +1,16 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
-import { clone, nowStr } from '../utils/misc';
-import {
-  STEPS, STEP_MS, TYPE_LABEL,
-  createInitialState,
-  detectType, detectVer, planChanges, stepDetail, applyDesign,
-} from '../data/settingsEngine';
+import PolicyUploadPanel from '../components/PolicyUploadPanel';
 
-const AiIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" /></svg>;
-const DocIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>;
 const ChevIcon = () => <svg className="crit-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>;
 
 const STATUS_BADGE = { 초안: 'badge-amber', 현행: 'badge-green', 폐기: 'badge-gray' };
 
 export default function AdminSettingsPage() {
   const { toast } = useApp();
-  const stateRef = useRef(createInitialState());
-  const [, bump] = useReducer((x) => x + 1, 0);
-  const rerender = () => bump();
-  const s = stateRef.current;
-
   const [tab, setTab] = useState('tab-b');
-  const [docType, setDocType] = useState('auto');
-  const dropInputRef = useRef(null);
-  const [dragging, setDragging] = useState(false);
+  const showRubrics = useCallback(() => setTab('tab-c'), []);
 
   const [rubrics, setRubrics] = useState(null);
   const loadRubrics = useCallback(() => {
@@ -32,70 +18,6 @@ export default function AdminSettingsPage() {
   }, [toast]);
   useEffect(() => { loadRubrics(); }, [loadRubrics]);
   const draftCount = rubrics ? rubrics.filter((r) => r.status === '초안').length : 0;
-
-  // --- 문서 업로드 · 에이전트 시뮬레이션 (목업 — 백엔드에 업로드 API가 아직 없음) ---
-  function runStep() {
-    const job = s.job;
-    rerender();
-    setTimeout(() => {
-      job.details[job.step] = stepDetail(s, job, job.step);
-      if (job.step === 0) {
-        job.doc.status = 'current';
-        job.doc.indexed = nowStr();
-        if (job.prev) job.prev.status = 'old';
-        rerender();
-      }
-      if (job.step === STEPS.length - 1) {
-        applyDesign(s, job);
-        job.done = true;
-        rerender();
-        toast(`평가 기준 ${job.draftId} 초안이 저장되었습니다`);
-        return;
-      }
-      job.step += 1;
-      runStep();
-    }, STEP_MS[job.step]);
-  }
-
-  function startUpload(file, isSample) {
-    if (s.job && !s.job.done) { toast('진행 중인 기준 설계가 끝난 뒤 다시 올려주세요'); return; }
-    const type = isSample ? 'price' : detectType(docType, file);
-    const ver = detectVer(file);
-    const prev = s.docs.find((d) => d.type === type && d.status === 'current');
-    let id = `${{ product: 'PROD', price: 'PRICE', policy: 'POLICY' }[type]}-${ver}`;
-    if (s.docs.some((d) => d.id === id)) id += `-${s.docs.length + 1}`;
-    const doc = { id, file, type, ver, status: 'indexing', indexed: '—', rubric: 'none', sections: [], highlight: '', hsec: '' };
-    if (isSample) {
-      doc.sections = [['L1', 'P-100 스마트 문서 AI (Doc AI): 25,000원 / 사용자·월'], ['L2', 'P-200 AI 컨택센터 (Contact AI): 95,000원 / 상담석·월'],
-        ['L3', 'P-300 데이터 분석 플랫폼 (Insight Hub): 3,000,000원 / 테넌트·월'], ['L4', 'S-10 전용 기술지원: 500,000원 / 월'], ['L5', 'S-20 온보딩 교육: 2,000,000원 / 회']];
-      doc.hsec = 'L2';
-      doc.highlight = 'P-200 Contact AI 단가 90,000 → 95,000원';
-    } else if (prev) {
-      doc.sections = clone(prev.sections);
-      doc.hsec = prev.sections[0][0];
-      doc.highlight = `${doc.hsec} 구간 내용 변경`;
-    } else {
-      doc.sections = [['§1', `${file.replace(/\.[^.]+$/, '')} 1절`]];
-      doc.hsec = '§1';
-      doc.highlight = '신규 자료';
-    }
-    s.docs.unshift(doc);
-    s.job = { doc, prev, plan: planChanges(type, doc), step: 0, done: false, details: [] };
-    rerender();
-    runStep();
-  }
-
-  function handlePickFile(e) {
-    const f = e.target.files[0];
-    if (f) startUpload(f.name, false);
-    e.target.value = '';
-  }
-  function handleDrop(e) {
-    e.preventDefault();
-    setDragging(false);
-    const f = e.dataTransfer.files[0];
-    if (f) startUpload(f.name, false);
-  }
 
   return (
     <section className="page active">
@@ -114,95 +36,10 @@ export default function AdminSettingsPage() {
         </button>
       </div>
 
-      {tab === 'tab-b' && (
-        <div className="settings-panel active">
-          <div className="upload-grid">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div className={`card dropzone${dragging ? ' drag' : ''}`}
-                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                onDragLeave={(e) => { e.preventDefault(); setDragging(false); }}
-                onDrop={handleDrop}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
-                <b>자료를 끌어다 놓으세요</b>
-                <p>업로드하면 AI가 평가 기준 초안을 자동으로 갱신해요</p>
-                <div className="upload-opts">
-                  <select value={docType} onChange={(e) => setDocType(e.target.value)}>
-                    <option value="auto">유형 자동 판별</option>
-                    <option value="product">제품 설명서</option>
-                    <option value="price">가격표</option>
-                    <option value="policy">내규·정책</option>
-                  </select>
-                  <button className="btn btn-primary btn-sm" onClick={() => dropInputRef.current.click()}>파일 선택</button>
-                  <button className="btn btn-sm" disabled={!!s.job && !s.job.done} onClick={() => startUpload('2026.3_표준가격표.xlsx', true)}>샘플로 체험</button>
-                  <input ref={dropInputRef} type="file" hidden accept=".pdf,.xlsx,.xls,.docx,.csv,.txt" onChange={handlePickFile} />
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="sec-head"><h3>등록 자료</h3><span>{s.docs.length}건 · 현행 {s.docs.filter((d) => d.status === 'current').length}건</span></div>
-                <table>
-                  <thead><tr><th>자료</th><th>유형</th><th>버전</th><th>상태</th><th>마지막 색인</th><th>평가 기준</th></tr></thead>
-                  <tbody>
-                    {s.docs.map((d) => (
-                      <tr key={d.id}>
-                        <td><div className="task-name">{d.file}</div><div className="task-sub">{d.id}</div></td>
-                        <td>{TYPE_LABEL[d.type]}</td>
-                        <td className="mono">{d.ver}</td>
-                        <td>
-                          {d.status === 'indexing' ? <span className="badge badge-amber">색인 중</span>
-                            : d.status === 'current' ? <span className="badge badge-green">현행</span>
-                              : <span className="badge badge-gray">이전 버전</span>}
-                        </td>
-                        <td className="mono">{d.indexed}</td>
-                        <td>
-                          {d.rubric === 'draft'
-                            ? <button className="badge badge-ai" style={{ border: 'none' }} onClick={() => setTab('tab-c')}>초안 검토 →</button>
-                            : d.rubric === 'linked' ? <span className="mono">근거 연결됨</span>
-                              : d.rubric === 'excluded' ? <span className="task-sub">근거 제외</span>
-                                : d.status === 'indexing' ? <span className="task-sub">설계 대기</span> : <span className="task-sub">미반영</span>}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="card agent-card">
-              <div className="agent-title">
-                <div className="agent-icon"><AiIcon /></div><b>평가 기준 설계 에이전트</b>
-                {s.job && !s.job.done && <span className="badge badge-amber" style={{ marginLeft: 'auto' }}>설계 중</span>}
-                {s.job && s.job.done && <span className="badge badge-green" style={{ marginLeft: 'auto' }}>초안 저장됨</span>}
-              </div>
-              {s.job ? (
-                <div className="agent-file"><DocIcon /><span className="name">{s.job.doc.file}</span><span className="chip chip-xs">{TYPE_LABEL[s.job.doc.type]}</span></div>
-              ) : (
-                <div className="agent-sub">자료 업로드 시 자동 실행돼요</div>
-              )}
-              <div>
-                {STEPS.map(([name, desc], i) => {
-                  const job = s.job;
-                  const st = !job ? 'wait' : job.done || i < job.step ? 'done' : i === job.step ? 'run' : 'wait';
-                  return (
-                    <div className={`step ${st}`} key={name}>
-                      <span className="step-ico"></span>
-                      <div><b>{name}</b><small>{(job && job.details[i]) || desc}</small></div>
-                    </div>
-                  );
-                })}
-              </div>
-              {s.job && s.job.done ? (
-                <div className="agent-result">
-                  <b>초안 저장 완료</b> · {s.job.changedCount}개 항목 수정
-                  <button className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} onClick={() => setTab('tab-c')}>초안 검토하기 →</button>
-                </div>
-              ) : (
-                <div className="agent-note">⚠ 이 패널은 목업이에요 — 백엔드에 자료 업로드·기준 자동 생성 API가 아직 없어서 실제로 적용되진 않아요.</div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 업로드 탭은 늘 띄워 두고 숨긴다. 평가 기준 탭에 가 있는 동안에도 생성 상태를 폴링해 완료 시 기준 목록을 다시 읽는다 */}
+      <div className={`settings-panel${tab === 'tab-b' ? ' active' : ''}`}>
+        <PolicyUploadPanel draftCount={draftCount} onGenerated={loadRubrics} onReview={showRubrics} />
+      </div>
 
       {tab === 'tab-c' && <RubricsTab rubrics={rubrics} reload={loadRubrics} />}
     </section>
