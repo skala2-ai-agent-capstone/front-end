@@ -216,7 +216,7 @@ export default function EvaluationReportPage() {
                 </div>
                 <div className="rubric-evidence">{item.reason}</div>
                 {item.coaching.map((c, i) => (
-                  <div className="rubric-coach" key={i}>{COACHING_LABEL[c.kind]} · {c.text}</div>
+                  <div className="rubric-coach" key={i}><b>{COACHING_LABEL[c.kind]}</b>{c.text}</div>
                 ))}
               </div>
             ))}
