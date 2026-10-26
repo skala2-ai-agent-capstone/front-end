@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { api } from '../api/client';
 import logo from '../assets/aworko-logo.png';
 
 export default function LoginPage() {
@@ -107,13 +108,25 @@ function SignupPanel() {
   const [name, setName] = useState('');
   const [companyId, setCompanyId] = useState('');
   const [teamId, setTeamId] = useState('');
+  const [companies, setCompanies] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    api.get('/api/auth/companies').then(setCompanies).catch(() => setCompanies([]));
+  }, []);
+
+  const selectedCompany = companies?.find((c) => c.companyId === companyId);
+
+  function handleCompanyChange(value) {
+    setCompanyId(value);
+    setTeamId('');
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!employeeNo || !password || !name || !companyId) {
-      setError('사번·비밀번호·이름·회사 ID는 필수예요');
+      setError('사번·비밀번호·이름·소속 회사는 필수예요');
       return;
     }
     if (password.length < 8) {
@@ -148,12 +161,18 @@ function SignupPanel() {
           <input id="suName" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="예: 홍길동" autoComplete="name" />
         </div>
         <div className="field">
-          <label htmlFor="suCompanyId">소속 회사 ID</label>
-          <input id="suCompanyId" type="text" value={companyId} onChange={(e) => setCompanyId(e.target.value)} placeholder="예: C-LGCNS-SALES" />
+          <label htmlFor="suCompanyId">소속 회사</label>
+          <select id="suCompanyId" value={companyId} onChange={(e) => handleCompanyChange(e.target.value)} disabled={!companies}>
+            <option value="">{companies ? '회사를 선택하세요' : '불러오는 중…'}</option>
+            {companies?.map((c) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
+          </select>
         </div>
         <div className="field">
-          <label htmlFor="suTeamId">소속 팀 ID (선택)</label>
-          <input id="suTeamId" type="text" value={teamId} onChange={(e) => setTeamId(e.target.value)} placeholder="예: T-SALES-01" />
+          <label htmlFor="suTeamId">소속 팀 (선택)</label>
+          <select id="suTeamId" value={teamId} onChange={(e) => setTeamId(e.target.value)} disabled={!selectedCompany}>
+            <option value="">팀 미지정</option>
+            {selectedCompany?.teams.map((t) => <option key={t.teamId} value={t.teamId}>{t.name}</option>)}
+          </select>
           <div className={`field-error${error ? ' show' : ''}`}>{error}</div>
         </div>
         <button type="submit" className={`btn btn-primary auth-submit${loading ? ' is-loading' : ''}`} disabled={loading}>
