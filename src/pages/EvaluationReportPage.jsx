@@ -53,6 +53,7 @@ export default function EvaluationReportPage() {
   useEffect(() => {
     if (!detail) return undefined;
     const status = detail.evaluation.status;
+    if (status === '평가 실패') return undefined;
     const stillEmpty = detail.report.items.length === 0;
     if (!IN_PROGRESS_STATUSES.includes(status) && !stillEmpty) return undefined;
 
@@ -63,6 +64,19 @@ export default function EvaluationReportPage() {
     }, 2500);
     return () => clearTimeout(pollTimerRef.current);
   }, [detail, loadDetail]);
+
+  async function handleRetry() {
+    setBusy(true);
+    try {
+      await api.post(`/api/evaluations/${detail.evaluation.evaluationId}/retry`);
+      await loadDetail(detail.evaluation.evaluationId);
+      toast('평가를 다시 시작했어요.');
+    } catch (err) {
+      toast(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function handleConfirm() {
     setBusy(true);
@@ -134,6 +148,7 @@ export default function EvaluationReportPage() {
 
   const { evaluation, report } = detail;
   const canAct = evaluation.status === '확인 대기';
+  const isFailed = evaluation.status === '평가 실패';
   const inProgress = report.items.length === 0;
 
   return (
@@ -141,7 +156,12 @@ export default function EvaluationReportPage() {
       <div className="topheader"><h1>개인 평가 리포트</h1><span className="badge badge-blue">{evaluation.displayStatus}</span></div>
       <div className="page-sub"><p>{evaluation.taskTitle || evaluation.taskId} · {evaluation.workTypeName}</p></div>
 
-      {inProgress ? (
+      {isFailed ? (
+        <div className="card" style={{ padding: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <p className="task-sub" style={{ color: 'var(--red)' }}>평가가 실패했어요. 다시 시도해주세요.</p>
+          <button className="btn btn-primary" onClick={handleRetry} disabled={busy}>{busy ? '재시도 중…' : '재시도'}</button>
+        </div>
+      ) : inProgress ? (
         <div className="card" style={{ padding: 20 }}>
           <p className="task-sub">평가가 진행 중이에요. 잠시 후 자동으로 갱신돼요…</p>
         </div>
