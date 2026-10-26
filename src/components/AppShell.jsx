@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import logo from '../assets/aworko-logo.png';
@@ -8,16 +7,6 @@ const navClass = ({ isActive }) => `nav-item${isActive ? ' active' : ''}`;
 export default function AppShell() {
   const { role, profile, logout } = useApp();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const switchRef = useRef(null);
-
-  useEffect(() => {
-    function handleOutsideClick(e) {
-      if (switchRef.current && !switchRef.current.contains(e.target)) setMenuOpen(false);
-    }
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
-  }, []);
 
   function handleLogout() {
     logout();
@@ -29,16 +18,6 @@ export default function AppShell() {
       <aside className="sidebar">
         <div className="brand">
           <img src={logo} alt="Aworko" style={{ height: 24, width: 'auto' }} />
-        </div>
-
-        <div className={`workspace-switch${menuOpen ? ' open' : ''}`} ref={switchRef} onClick={() => setMenuOpen((v) => !v)}>
-          <div className="wmark"></div>
-          <div className="wtext"><b>{profile.teamName}</b><span>{profile.companyName}</span></div>
-          <svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M8 9l4 4 4-4M8 15l4-4 4 4" /></svg>
-          <div className="workspace-menu">
-            <div className="workspace-menu-item active">{profile.companyName} · {profile.teamName} (현재)</div>
-            <div className="workspace-menu-item disabled">+ 다른 회사로 전환 (준비 중)</div>
-          </div>
         </div>
 
         <div id="mainNav">

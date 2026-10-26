@@ -170,25 +170,6 @@
   .brand-mark svg{width:14px; height:14px;}
   .brand-name{font-size:15px; font-weight:700;}
 
-  .workspace-switch{
-    position:relative; display:flex; align-items:center; gap:9px; padding:9px 10px; border:1px solid var(--border);
-    border-radius:11px; margin-bottom:16px; background:var(--card); box-shadow:var(--shadow-card); cursor:pointer;
-  }
-  .workspace-switch .wmark{width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--primary-line),var(--primary-dark)); flex:none;}
-  .workspace-switch .wtext{flex:1; min-width:0;}
-  .workspace-switch .wtext b{display:block; font-size:13.5px;}
-  .workspace-switch .wtext span{font-size:11.5px; color:var(--text-faint);}
-  .workspace-switch svg{width:14px; height:14px; color:var(--text-faint); flex:none;}
-  .workspace-switch .chev{transition:transform .15s;}
-  .workspace-switch.open .chev{transform:rotate(180deg);}
-  .workspace-menu{
-    display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:20;
-    background:var(--card); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow-shell); padding:6px;
-  }
-  .workspace-switch.open .workspace-menu{display:block;}
-  .workspace-menu-item{padding:9px 10px; border-radius:7px; font-size:13px; font-weight:600; color:var(--text-muted);}
-  .workspace-menu-item.active{color:var(--text); background:var(--gray-soft);}
-  .workspace-menu-item.disabled{color:var(--text-faint); cursor:default;}
   .logout-btn{
     width:30px; height:30px; border-radius:9px; border:none; background:transparent; color:var(--text-faint);
     display:flex; align-items:center; justify-content:center; flex:none;
@@ -209,10 +190,11 @@
   .role-switch{display:flex; gap:3px; background:var(--gray-soft); border-radius:9px; padding:3px;}
   .role-btn{flex:1; padding:7px 0; border-radius:7px; font-size:12.5px; font-weight:700; border:none; background:transparent; color:var(--text-muted);}
   .role-btn.active{background:var(--card); color:var(--text); box-shadow:0 1px 2px rgba(0,0,0,.06);}
-  .user-row{display:flex; align-items:center; gap:9px; padding:8px; border-top:1px solid var(--border); padding-top:14px;}
+  .user-row{display:flex; align-items:center; gap:11px; padding:8px; border-top:1px solid var(--border); padding-top:14px;}
   .avatar{width:30px; height:30px; border-radius:50%; background:var(--primary-subdued); color:var(--primary-dark); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12.5px; flex:none;}
-  .user-row b{display:block; font-size:13.5px;}
-  .user-row span{font-size:11.5px; color:var(--text-faint);}
+  .user-row .avatar{width:38px; height:38px; font-size:15px;}
+  .user-row b{display:block; font-size:15px;}
+  .user-row span{font-size:13px; color:var(--text-faint);}
 
   .main{flex:1; min-width:0; overflow-y:auto; padding:26px 34px 50px;}
   .page{display:none;}
