@@ -226,18 +226,18 @@ function RubricsTab({ rubrics, reload }) {
             ))}
           </select>
           {detail && <span><span className={`badge ${STATUS_BADGE[detail.rubric.status] || 'badge-gray'}`}>{detail.rubric.status === '초안' ? '승인 대기' : detail.rubric.status === '현행' ? '적용 중' : '읽기 전용'}</span></span>}
-          {detail && <span className="rb-meta">{detail.rubric.note || `적용일 ${detail.rubric.effectiveFrom || '—'}`}</span>}
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {detail?.rubric.effectiveFrom && <span className="rb-meta" style={{ marginRight: 4 }}>적용일 {detail.rubric.effectiveFrom}</span>}
           {isDraftView ? (
             <>
               <button className="btn" disabled={busy} onClick={discardDraft}>초안 폐기</button>
               <button className="btn btn-primary" disabled={busy} onClick={approveDraft}>승인 후 적용</button>
             </>
           ) : draftEntry ? (
-            <button className="btn" onClick={() => setViewKey({ docId: draftEntry.docId, version: draftEntry.version })}>{draftEntry.version} 초안 보기</button>
+            <button className="btn btn-primary" onClick={() => setViewKey({ docId: draftEntry.docId, version: draftEntry.version })}>{draftEntry.version} 초안 보기</button>
           ) : (
-            <button className="btn" disabled={busy} onClick={createDraft}>수정 초안 만들기</button>
+            <button className="btn btn-primary" disabled={busy} onClick={createDraft}>수정 초안 만들기</button>
           )}
         </div>
       </div>
@@ -297,6 +297,12 @@ function RubricsTab({ rubrics, reload }) {
   );
 }
 
+/** 초안이면 입력칸, 아니면(읽기 전용) 상자 없이 글자만 보여 준다 */
+function EdText({ editable, value, onChange }) {
+  if (!editable) return <div className="ed-text">{value || '—'}</div>;
+  return <textarea rows={Math.max(2, Math.ceil((value || '').length / 62))} value={value} onChange={(e) => onChange(e.target.value)} />;
+}
+
 function RubricItemCard({
   item, open, edit, isDraftView, dirty, busy, clauses, clauseInput, setClauseInput, sourceInput, setSourceInput,
   onToggle, onField, onAddSource, onRemoveSource, onAddClause, onRemoveClause, onSave, onCancel, onResetToCurrent,
@@ -311,24 +317,24 @@ function RubricItemCard({
 
       {open && (
         <div className="crit-body-wrap">
-          <div className="crit-body">
+          <div className={`crit-body${isDraftView ? '' : ' readonly'}`}>
             <div className="ed-row"><label>평가 질문</label>
-              <textarea disabled={!isDraftView} rows={Math.max(2, Math.ceil((c.criterion || '').length / 62))} value={c.criterion} onChange={(e) => onField('criterion', e.target.value)} />
+              <EdText editable={isDraftView} value={c.criterion} onChange={(v) => onField('criterion', v)} />
             </div>
             <div className="ed-row"><label>점수 조건</label>
               <div>
                 {['2', '1', '0'].map((sc) => (
                   <div className="lvl" key={sc}>
                     <span className={`lvl-score s${sc}`}>{sc}점</span>
-                    <textarea disabled={!isDraftView} rows={Math.max(2, Math.ceil((c[`score${sc}`] || '').length / 62))} value={c[`score${sc}`]} onChange={(e) => onField(`score${sc}`, e.target.value)} />
+                    <EdText editable={isDraftView} value={c[`score${sc}`]} onChange={(v) => onField(`score${sc}`, v)} />
                   </div>
                 ))}
               </div>
             </div>
             <details className="ed-more">
               <summary>미관측·검토 조건</summary>
-              <div className="ed-row"><label>미관측 조건</label><textarea disabled={!isDraftView} rows={Math.max(2, Math.ceil((c.unobserved || '').length / 62))} value={c.unobserved} onChange={(e) => onField('unobserved', e.target.value)} /></div>
-              <div className="ed-row"><label>검토 필요 조건</label><textarea disabled={!isDraftView} rows={Math.max(2, Math.ceil((c.needsReview || '').length / 62))} value={c.needsReview} onChange={(e) => onField('needsReview', e.target.value)} /></div>
+              <div className="ed-row"><label>미관측 조건</label><EdText editable={isDraftView} value={c.unobserved} onChange={(v) => onField('unobserved', v)} /></div>
+              <div className="ed-row"><label>검토 필요 조건</label><EdText editable={isDraftView} value={c.needsReview} onChange={(v) => onField('needsReview', v)} /></div>
             </details>
             <div className="ed-row"><label>근거 자료</label>
               <div className="ev-list">
