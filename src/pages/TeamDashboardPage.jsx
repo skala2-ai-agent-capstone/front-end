@@ -51,20 +51,6 @@ export default function TeamDashboardPage() {
     }
   }
 
-  function exportReport() {
-    if (!dashboard) return;
-    const rows = [['항목', '값'],
-      ['팀', dashboard.teamName], ['기간', `${dashboard.periodFrom} - ${dashboard.periodTo}`],
-      ['수집 건수', dashboard.stats.collectedCount], ['처리율', `${dashboard.stats.processRate}%`],
-      ['확정 건수', dashboard.stats.confirmedCount], ['미관측 비율', `${dashboard.stats.unobservedRate}%`]];
-    const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `팀대시보드_${dashboard.periodFrom}_${dashboard.periodTo}.csv`; a.click();
-    URL.revokeObjectURL(url);
-  }
-
   if (error) return <section className="page active"><div className="topheader"><h1>팀 대시보드</h1></div><p className="task-sub" style={{ color: 'var(--red)' }}>{error}</p></section>;
   if (!dashboard) return <section className="page active"><div className="topheader"><h1>팀 대시보드</h1></div><p className="task-sub">불러오는 중…</p></section>;
 
@@ -84,7 +70,6 @@ export default function TeamDashboardPage() {
               style={{ border: 'none', background: 'none', font: 'inherit', color: 'inherit', padding: 0, width: 118 }} />
           </div>
           <button className="btn btn-ghost btn-sm" onClick={applyPeriod}>적용</button>
-          <button className="btn btn-ghost" onClick={exportReport}>리포트 내보내기</button>
         </div>
       </div>
       <div className="page-sub"><p>{dashboard.teamName} · 최소 집계 인원 {dashboard.minAggregationSize}명</p></div>
