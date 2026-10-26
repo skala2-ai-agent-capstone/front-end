@@ -47,7 +47,7 @@ export default function AppShell() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
             업무 현황
           </NavLink>
-          <NavLink to="/workspace" className={navClass}>
+          <NavLink to="/workspace" end className={navClass}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.8 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.1-5.1A8.4 8.4 0 1 1 21 11.5z" /></svg>
             AI 업무 공간
           </NavLink>
