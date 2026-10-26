@@ -125,38 +125,29 @@ export default function TaskDashboardPage() {
             <div className="card stat-card"><div className="stat-label">검토 대기</div><div className="stat-val">{reviews ? reviews.length : '-'}</div></div>
           </div>
 
-          <div className="card" style={{ marginBottom: 16 }}>
-            <div className="tbl-head">
-              <b style={{ fontSize: 15 }}>평가 검토가 필요한 업무</b>
+          <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <b style={{ fontSize: 18 }}>평가 검토가 필요한 업무</b>
               {reviews && reviews.length > 0 && (
-                <button className="btn-link" onClick={() => navigate('/review')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+                <button className="btn-link" onClick={() => navigate('/review')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 18, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
                   전체 보기 →
                 </button>
               )}
             </div>
             {reviews && reviews.length > 0 && (
-              <table>
-                <thead>
-                  <tr><th>업무</th><th>유형</th><th>사유</th><th>상태</th><th>접수</th><th></th></tr>
-                </thead>
-                <tbody>
-                  {reviews.map((r) => (
-                    <tr key={r.reviewRequestId} className="row-link" onClick={() => navigate(`/review/${r.reviewRequestId}`)}>
-                      <td><div className="task-name">{r.taskTitle || r.taskId}</div><div className="task-sub">{r.employeeId}</div></td>
-                      <td>{r.workType || '-'}</td>
-                      <td>{r.reason}</td>
-                      <td><span className="badge badge-red">{r.displayStatus}</span></td>
-                      <td className="mono">{new Date(r.submittedAt).toLocaleString()}</td>
-                      <td style={{ textAlign: 'right' }}>
-                        <svg className="row-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="recent-row">
+                {reviews.map((r) => (
+                  <button key={r.reviewRequestId} className="ws-card" onClick={() => navigate(`/review/${r.reviewRequestId}`)}>
+                    <div className="ws-card-top"><span className="badge badge-red">{r.displayStatus}</span></div>
+                    <div className="ws-card-title">{r.taskTitle || r.taskId}</div>
+                    <div className="ws-card-type">{r.reason}</div>
+                    <div className="mono" style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 2 }}>{r.employeeId} · {new Date(r.submittedAt).toLocaleDateString()}</div>
+                  </button>
+                ))}
+              </div>
             )}
-            {reviews && reviews.length === 0 && <p className="task-sub" style={{ padding: '0 20px 20px' }}>지금 검토가 필요한 업무가 없어요.</p>}
-            {!reviews && !error && <p className="task-sub" style={{ padding: '0 20px 20px' }}>불러오는 중…</p>}
+            {reviews && reviews.length === 0 && <p className="task-sub">지금 검토가 필요한 업무가 없어요.</p>}
+            {!reviews && !error && <p className="task-sub">불러오는 중…</p>}
           </div>
         </>
       )}
