@@ -125,8 +125,9 @@ function SignupPanel() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!employeeNo || !password || !name || !companyId) {
-      setError('사번·비밀번호·이름·소속 회사는 필수예요');
+    // 팀은 필수다: 팀이 없으면 이의 제기를 검토할 팀장이 정해지지 않는다(가입은 항상 팀원)
+    if (!employeeNo || !password || !name || !companyId || !teamId) {
+      setError('사번·비밀번호·이름·소속 회사·팀은 필수예요');
       return;
     }
     if (password.length < 8) {
@@ -168,11 +169,14 @@ function SignupPanel() {
           </select>
         </div>
         <div className="field">
-          <label htmlFor="suTeamId">소속 팀 (선택)</label>
-          <select id="suTeamId" value={teamId} onChange={(e) => setTeamId(e.target.value)} disabled={!selectedCompany}>
-            <option value="">팀 미지정</option>
+          <label htmlFor="suTeamId">소속 팀</label>
+          <select id="suTeamId" value={teamId} onChange={(e) => setTeamId(e.target.value)} disabled={!selectedCompany?.teams.length}>
+            <option value="">{selectedCompany && !selectedCompany.teams.length ? '등록된 팀이 없어요' : '팀을 선택하세요'}</option>
             {selectedCompany?.teams.map((t) => <option key={t.teamId} value={t.teamId}>{t.name}</option>)}
           </select>
+          {selectedCompany && !selectedCompany.teams.length && (
+            <div className="task-sub" style={{ marginTop: 6 }}>이 회사에는 아직 팀이 없어 가입할 수 없어요. 관리자에게 팀 등록을 요청하세요.</div>
+          )}
           <div className={`field-error${error ? ' show' : ''}`}>{error}</div>
         </div>
         <button type="submit" className={`btn btn-primary auth-submit${loading ? ' is-loading' : ''}`} disabled={loading}>

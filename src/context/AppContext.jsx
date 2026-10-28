@@ -33,7 +33,7 @@ export function AppProvider({ children }) {
       password,
       name,
       companyId,
-      teamId: teamId || undefined,
+      teamId,
     });
     sessionStorage.setItem('accessToken', data.accessToken);
     setUser(data.user);
