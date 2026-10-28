@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
 import { useLiveFeedback } from '../hooks/useLiveFeedback';
 import LiveFeedbackPanel from '../components/LiveFeedbackPanel';
+import RetryEvaluationButton, { RETRYABLE_STATUSES } from '../components/RetryEvaluationButton';
 import { stageBadgeClass } from '../utils/stage';
 
 export default function WorkspacePage() {
@@ -218,7 +219,13 @@ function WorkspaceView({ workId }) {
           </button>
           <h1 style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{summary.title}</h1>
         </div>
-        <span className={`badge ${stageBadgeClass(summary.stage)}`}>{summary.stage}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 'none' }}>
+          {/* 팀장 조회: 처리 실패·자료 보류 평가를 AI가 다시 평가하게 한다 */}
+          {!editable && summary.evaluationId && RETRYABLE_STATUSES.includes(summary.evaluationStatus) && (
+            <RetryEvaluationButton evaluationId={summary.evaluationId} onDone={refreshDetail} />
+          )}
+          <span className={`badge ${stageBadgeClass(summary.stage)}`}>{summary.stage}</span>
+        </div>
       </div>
       <div className="page-sub" style={{ marginBottom: 16 }}>
         <p>

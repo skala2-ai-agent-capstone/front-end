@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
+import RetryEvaluationButton, { RETRYABLE_STATUSES } from '../components/RetryEvaluationButton';
 
 export default function ReviewDetailPage() {
   const { reviewRequestId } = useParams();
@@ -132,8 +133,14 @@ export default function ReviewDetailPage() {
           </div>
         </>
       ) : (
-        <div className="card" style={{ padding: '15px 18px' }}>
-          <div style={{ fontSize: 13.5, color: 'var(--text-muted)' }}>이미 처리된 검토 건이에요 — 상태: {evaluation.evaluation.displayStatus}</div>
+        <div className="card" style={{ padding: '15px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <div style={{ fontSize: 13.5, color: 'var(--text-muted)' }}>
+            이미 처리된 검토 건이에요 — 상태: {evaluation.evaluation.displayStatus}
+            {RETRYABLE_STATUSES.includes(evaluation.evaluation.status) && ' · 자료가 보완됐다면 AI가 다시 평가하게 할 수 있어요.'}
+          </div>
+          {RETRYABLE_STATUSES.includes(evaluation.evaluation.status) && (
+            <RetryEvaluationButton evaluationId={evaluation.evaluation.evaluationId} onDone={load} className="btn btn-primary" />
+          )}
         </div>
       )}
     </section>
