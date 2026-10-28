@@ -167,7 +167,7 @@ export default function TaskDashboardPage() {
           {stats.needsMaterial > 0 && (
             <div className="info-banner warn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg>
-              <b>자료 보완이 필요한 업무가 {stats.needsMaterial}건 있어요.</b>&nbsp;참조 자료를 추가하면 평가가 자동으로 재개됩니다.
+              <b>자료 보완이 필요한 업무가 {stats.needsMaterial}건 있어요.</b>&nbsp;자료를 보완했다면 담당 팀장에게 AI 재평가를 요청하세요.
             </div>
           )}
 

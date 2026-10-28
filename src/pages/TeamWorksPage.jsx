@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
 import { stageBadgeClass } from '../utils/stage';
 import Pagination, { PAGE_SIZE } from '../components/Pagination';
+import RetryEvaluationButton, { RETRYABLE_STATUSES } from '../components/RetryEvaluationButton';
 
 export default function TeamWorksPage() {
   const navigate = useNavigate();
@@ -86,7 +87,10 @@ export default function TeamWorksPage() {
                 <td>{w.employeeName || '-'}</td>
                 <td><span className={`badge ${stageBadgeClass(w.stage)}`}>{w.stage}</span></td>
                 <td className="mono">{new Date(w.updatedAt).toLocaleString()}</td>
-                <td style={{ textAlign: 'right' }}>
+                <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  {w.evaluationId && RETRYABLE_STATUSES.includes(w.evaluationStatus) && (
+                    <RetryEvaluationButton evaluationId={w.evaluationId} onDone={load} />
+                  )}
                   <svg className="row-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>
                 </td>
               </tr>

@@ -3,6 +3,9 @@ import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
 
 const IN_PROGRESS_STATUSES = ['대기', '수집 중', '평가 중', '근거 확인 중', '코칭 생성 중'];
+// 평가 상태(evaluation.status) 값. 업무 단계(stage)의 '평가 실패'와 다르다
+const FAILED = '처리 실패';
+const ON_HOLD = '자료 보류';
 const ITEM_STATUS_BADGE = { 채점: 'badge-green', 미관측: 'badge-gray', '검토 필요': 'badge-amber' };
 const COACHING_LABEL = { 강점: '강점', 보완점: '개선 제안', '기록 안내': '참고' };
 
@@ -53,7 +56,7 @@ export default function EvaluationReportPage() {
   useEffect(() => {
     if (!detail) return undefined;
     const status = detail.evaluation.status;
-    if (status === '평가 실패') return undefined;
+    if (status === FAILED) return undefined;
     const stillEmpty = detail.report.items.length === 0;
     if (!IN_PROGRESS_STATUSES.includes(status) && !stillEmpty) return undefined;
 
@@ -64,19 +67,6 @@ export default function EvaluationReportPage() {
     }, 2500);
     return () => clearTimeout(pollTimerRef.current);
   }, [detail, loadDetail]);
-
-  async function handleRetry() {
-    setBusy(true);
-    try {
-      await api.post(`/api/evaluations/${detail.evaluation.evaluationId}/retry`);
-      await loadDetail(detail.evaluation.evaluationId);
-      toast('평가를 다시 시작했어요.');
-    } catch (err) {
-      toast(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function handleConfirm() {
     setBusy(true);
@@ -148,7 +138,7 @@ export default function EvaluationReportPage() {
 
   const { evaluation, report } = detail;
   const canAct = evaluation.status === '확인 대기';
-  const isFailed = evaluation.status === '평가 실패';
+  const isFailed = evaluation.status === FAILED;
   const inProgress = report.items.length === 0;
 
   return (
@@ -156,10 +146,17 @@ export default function EvaluationReportPage() {
       <div className="topheader"><h1>개인 평가 리포트</h1><span className="badge badge-blue">{evaluation.displayStatus}</span></div>
       <div className="page-sub"><p>{evaluation.taskTitle || evaluation.taskId} · {evaluation.workTypeName}</p></div>
 
+      {evaluation.status === ON_HOLD && (
+        <div className="info-banner warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg>
+          <b>팀장이 자료 보완이 필요하다고 판단했어요.</b>&nbsp;자료를 보완했다면 담당 팀장에게 AI 재평가를 요청하세요.
+        </div>
+      )}
+
       {isFailed ? (
-        <div className="card" style={{ padding: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <p className="task-sub" style={{ color: 'var(--red)' }}>평가가 실패했어요. 다시 시도해주세요.</p>
-          <button className="btn btn-primary" onClick={handleRetry} disabled={busy}>{busy ? '재시도 중…' : '재시도'}</button>
+        <div className="card" style={{ padding: 20 }}>
+          {/* 재처리는 담당 팀장만 할 수 있다(팀원 업무·검토 화면의 'AI 재평가') */}
+          <p className="task-sub" style={{ color: 'var(--red)' }}>평가를 끝내지 못했어요. 담당 팀장에게 AI 재평가를 요청해 주세요.</p>
         </div>
       ) : inProgress ? (
         <div className="card" style={{ padding: 20 }}>
